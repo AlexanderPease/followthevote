@@ -4,8 +4,8 @@ import sys
 sys.path.insert(0, '/Users/nick/dev/conversation')
 import settings
 
-from lib import postsdb
-from lib import disqus
+from db import postsdb
+from db import disqus
 from mongo import db
 
 #users = db.user_info.find({"lastname" : {"$exists" : true, "$ne" : ""}})

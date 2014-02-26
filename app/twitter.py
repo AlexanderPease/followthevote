@@ -2,7 +2,7 @@ import tweepy
 import app.basic
 import settings
 
-from lib import userdb
+from db import userdb
 
 ####################
 ### AUTH VIA TWITTER

@@ -36,7 +36,7 @@ class HangoutShortcuts(app.basic.BaseHandler):
       new_url = 'https://plus.google.com/hangouts/_/event/csjrctgcaphdptmqacnfisq0i2g'
     elif name == 'eventspace':
       new_url = 'https://plus.google.com/hangouts/_/event/csrdap1091spu3cg3kvgs8o9a08'
-    elif name == 'library':
+    elif name == 'dbrary':
       new_url = 'https://plus.google.com/hangouts/_/event/cltm1dbi65rplvbpcvptbm5n35s'
     elif name == 'live':
       new_url = 'https://plus.google.com/hangouts/_/event/chg577i8le837l0iu858etlj44k'

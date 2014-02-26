@@ -6,7 +6,7 @@ import os
 import httplib
 import logging
 
-from lib import userdb
+from db import userdb
 
 class BaseHandler(tornado.web.RequestHandler):
   def __init__(self, *args, **kwargs):

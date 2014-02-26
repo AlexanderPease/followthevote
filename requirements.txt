@@ -13,3 +13,5 @@ disqus-python
 splinter
 selenium
 werkzeug
+geopy==0.97
+sunlight==1.2.1

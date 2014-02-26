@@ -11,15 +11,15 @@ import urllib
 import datetime
 import time
 from urlparse import urlparse
-from lib import bitly
-from lib import google
-from lib import mentionsdb
-from lib import postsdb
-from lib import sanitize
-from lib import tagsdb
-from lib import userdb
-from lib import disqus
-from lib import template_helpers
+from db import bitly
+from db import google
+from db import mentionsdb
+from db import postsdb
+from db import sanitize
+from db import tagsdb
+from db import userdb
+from db import disqus
+from db import template_helpers
 
 ###############
 ### New Post

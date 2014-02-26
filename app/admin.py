@@ -7,11 +7,24 @@ import json
 import re, time, imaplib
 import requests
 
-from lib import companiesdb, postsdb, userdb, gmaildb
-from lib import hackpad
-from lib import disqus
-from lib import emailsdb
+from db import companiesdb, postsdb, userdb, gmaildb
+from db import hackpad
+from db import disqus
+from db import emailsdb
 from disqusapi import DisqusAPI
+
+###########################
+### List the available admin tools
+### /admin
+###########################
+class AdminHome(app.basic.BaseHandler):
+  @tornado.web.authenticated
+  def get(self):
+    if self.current_user not in settings.get('staff'):
+      print 'loser'
+      self.redirect('/')
+    else:
+      self.render('admin/admin_home.html')
 
 ############################
 # ADMIN NEWSLETTER
@@ -111,18 +124,6 @@ class AdminCompany(app.basic.BaseHandler):
       companiesdb.save_company(company)
 
       self.render('admin/admin_company.html', company=company)
-
-###########################
-### List the available admin tools
-### /admin
-###########################
-class AdminHome(app.basic.BaseHandler):
-  @tornado.web.authenticated
-  def get(self):
-    if self.current_user not in settings.get('staff'):
-      self.redirect('/')
-    else:
-      self.render('admin/admin_home.html')
 
 ###########################
 ### View system statistics

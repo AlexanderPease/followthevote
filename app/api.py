@@ -3,9 +3,9 @@ import logging
 import settings
 import datetime
 
-from lib import disqus
-from lib import postsdb
-from lib import userdb
+from db import disqus
+from db import postsdb
+from db import userdb
 
 #########################
 ### Alerting to share owner (and other subscribers) on new Disqus comments

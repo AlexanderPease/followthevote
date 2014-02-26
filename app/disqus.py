@@ -7,9 +7,9 @@ import settings
 import app.basic
 from datetime import datetime
 
-from lib import userdb
-from lib import postsdb
-from lib import disqus
+from db import userdb
+from db import postsdb
+from db import disqus
 
 class Auth(app.basic.BaseHandler):
   @tornado.web.authenticated

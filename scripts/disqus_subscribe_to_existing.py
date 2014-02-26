@@ -8,9 +8,9 @@ except:
 import settings
 import requests
 import logging
-from lib import postsdb
-from lib import disqus
-from lib import userdb
+from db import postsdb
+from db import disqus
+from db import userdb
 
 # =================================================================
 # This script finds all users that have authenticated with Disqus

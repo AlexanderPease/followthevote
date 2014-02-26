@@ -4,7 +4,7 @@ try:
 except:
 	print "could not import -- must be running on heroku"
 
-from lib import emailsdb
+from db import emailsdb
 
 response3 = emailsdb.add_list_to_email()
 print response3

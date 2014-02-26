@@ -6,7 +6,7 @@ try:
 except:
 	pass
 
-from lib import jobsdb
+from db import jobsdb
 
 INDEED_COUNTRIES = ['US',
 					'GB', # Great Britain

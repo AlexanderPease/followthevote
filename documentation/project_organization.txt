@@ -10,9 +10,9 @@ The basic.py file should be imported into each class in these files, so all of t
 
 Where all genearl documentation (like this) should be stored.
 
-/lib
+/db
 
-Where all database calls and logic sits (models)...this is also a good location for any custom helper libraries that we want our scripts to have available (template_helpers.py for example)
+Where all database calls and logic sits (models)...this is also a good location for any custom helper dbraries that we want our scripts to have available (template_helpers.py for example)
 
 /scripts
 

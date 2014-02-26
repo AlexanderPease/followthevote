@@ -1,5 +1,5 @@
 import app.basic
-from lib import yammer, userdb, postsdb
+from db import yammer, userdb, postsdb
 from slugify import slugify
 
 ###############

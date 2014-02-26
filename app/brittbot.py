@@ -2,7 +2,7 @@ import app.basic
 import tornado.web
 import settings
 import datetime
-from lib import brittbotdb
+from db import brittbotdb
 import requests
 
 ###########################

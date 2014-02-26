@@ -1,8 +1,8 @@
 import app.basic
 import urllib
 
-from lib import postsdb
-from lib import tagsdb
+from db import postsdb
+from db import tagsdb
 
 ################
 ### SEARCH POSTS

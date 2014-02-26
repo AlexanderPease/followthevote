@@ -6,9 +6,9 @@ import logging
 import settings
 import app.basic
 
-from lib import userdb
-from lib import postsdb
-from lib import yammer
+from db import userdb
+from db import postsdb
+from db import yammer
 
 ####################
 ### AUTH VIA YAMMER

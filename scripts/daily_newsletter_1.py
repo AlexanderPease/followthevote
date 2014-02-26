@@ -4,7 +4,7 @@ try:
 except:
 	print "could not import -- must be running on heroku"
 from datetime import datetime
-from lib import postsdb, emailsdb
+from db import postsdb, emailsdb
 
 
 posts = postsdb.get_hot_posts_by_day(datetime.today())

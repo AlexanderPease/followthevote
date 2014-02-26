@@ -10,6 +10,7 @@ import logging
 # settings is required/used to set our environment
 import settings 
 
+import app.public
 import app.user
 import app.admin
 import app.api
@@ -56,7 +57,7 @@ class Application(tornado.web.Application):
       (r'/jobs/$', app.redirects.RedirectMappings),
       (r'/focus$', app.redirects.RedirectMappings),
       (r'/office$', app.redirects.RedirectMappings),
-      (r'/(?P<name>albert|andy|brad|brian|brittany|conference|live|conferenceroom|eventspace|fred|john|library|nick|zander|sqwiggle)$', app.redirects.HangoutShortcuts),
+      (r'/(?P<name>albert|andy|brad|brian|brittany|conference|live|conferenceroom|eventspace|fred|john|dbrary|nick|zander|sqwiggle)$', app.redirects.HangoutShortcuts),
       
       # usv-specific admin
       (r"/admin/company", app.admin.AdminCompany),
@@ -64,7 +65,6 @@ class Application(tornado.web.Application):
       (r"/admin/gmailapi", app.admin.GmailAPI),
 
       #general site pages
-      (r"/about", app.general.About),
       (r"/jobs", app.general.Jobs),
       (r"/portfolio", app.general.Portfolio),   
 
@@ -146,7 +146,7 @@ class Application(tornado.web.Application):
       (r"/posts$", app.posts.ListPosts),
       (r"/widget/demo.*?", app.posts.WidgetDemo),
       (r"/widget.*?", app.posts.Widget),
-      (r'/$', app.posts.ListPosts),
+      (r'/$', app.public.Index),
     ]
     
     app_settings.update({

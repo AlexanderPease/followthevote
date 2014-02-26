@@ -4,7 +4,7 @@ import settings
 import logging
 from datetime import datetime, timedelta
 import optparse
-from lib import statsdb, postsdb
+from db import statsdb, postsdb
 
 parser = optparse.OptionParser()
 parser.add_option('-e', '--end',

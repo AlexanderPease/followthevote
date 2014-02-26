@@ -1,11 +1,11 @@
 import tornado.web
 import app.basic
 import settings
-from lib import disqus
-from lib import mentionsdb
-from lib import postsdb
-from lib import tagsdb
-from lib import userdb
+from db import disqus
+from db import mentionsdb
+from db import postsdb
+from db import tagsdb
+from db import userdb
 
 ###########################
 ### EMAIL SETTINGS

@@ -2,7 +2,7 @@ import app.basic
 
 from datetime import datetime, timedelta, date
 
-from lib import postsdb
+from db import postsdb
 
 ######################
 ### WEEKLY STATS

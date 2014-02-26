@@ -1,8 +1,8 @@
 import sys
 sys.path.insert(0, '/Users/nick/dev/conversation')
 import settings
-from lib import postsdb
-from lib import userdb
+from db import postsdb
+from db import userdb
 from mongo import db
 import logging
 
