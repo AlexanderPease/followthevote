@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <head>
+    <title>USV Correspondence</title>
+    <style>
+      body {
+        min-width: 600px;
+        overflow-x: hidden;
+      }
+
+      img {
+        margin: 5px;
+        border: 2px solid black;
+        vertical-align: middle;
+        width: 75px;
+        height: 75px;
+      }
+    </style>
+
+    <!--
+      - JavaScript and HTML must be in separate files: see our Content Security
+      - Policy documentation[1] for details and explanation.
+      -
+      - [1]: http://developer.chrome.com/extensions/contentSecurityPolicy.html
+     -->
+    <script type="text/javascript" src="jquery-2.1.0.min.js"></script>
+    <script src="popup.js"></script>
+
+    <link rel="stylesheet" href="bootstrap3/css/bootstrap.min.css">
+  </head>
+  <body>
+
+    <div id="title"></div>
+
+    <!-- Rows for each USV member loaded by JS -->
+    <table class="table table-striped">
+        <tr>
+          <th>Name</th>
+          <th>Total Emails In</th>
+          <th>Latest Email In</th>
+          <th>Total Emails Out</th>
+          <th>Latest Email Out</th>
+        </tr>
+    </table>
+
+    <a href="http://www.usv.com/admin/correspondence" target="_blank">Search for other</a>
+  </body>
+</html>
+
