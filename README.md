@@ -12,7 +12,7 @@ Technology
 Built with:
 
  * Python / [Tornado](http://tornadoweb.org)
- * [Sunlight] (http://sunlightlabs.com)
+ * [Sunlight](http://sunlightlabs.com)
  * [Mongodb](http://www.mongodb.com/)
  * [Twitter](http://dev.twitter.com)
  * [Sendgrid](http://sendgrid.com/docs/API_Reference/)
