@@ -1,13 +1,13 @@
-{% extends "base.html" %}
+{% extends "../base.html" %}
 
 {% block body %}
-  {% if message %}
-    <h4>{{ message }}</h4>
-  {% endif %}
+  {% if msg %}
+    <h4>{{ msg }}</h4>
+  {% end %}
 
-  {% if error %}
-    {{ error }}</br>
-  {% endif %}
+  {% if err %}
+    {{ err }}</br>
+  {% end %}
 
   {% if form %}
     <h4>Complete the tweet!</h4>
@@ -34,9 +34,9 @@
     Voted at: {{ vote.voted_at }}</br>
     Result: {{ vote.result }}</br>
         
-  {% endif %}
+  {% end %}
 
-{% endblock %}
+{% end %}
 
 {% block javascript %}
   <script>
@@ -66,4 +66,4 @@
       }
     }
   </script>
-{% endblock %}
+{% end %}

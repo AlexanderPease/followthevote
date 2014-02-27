@@ -15,18 +15,11 @@ import app.user
 import app.admin
 import app.api
 import app.basic
-import app.disqus
-import app.yammer
 import app.general
-import app.network
-import app.posts
-import app.search
-import app.stats
 import app.twitter
 import app.error
 import templates
 import app.redirects
-import app.brittbot
 
 import newrelic.agent
 path = os.path.join(settings.get("project_root"), 'newrelic.ini')
