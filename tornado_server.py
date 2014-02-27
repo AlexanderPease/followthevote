@@ -14,9 +14,6 @@ import app.basic
 import app.public
 import app.admin
 import app.twitter
-import app.user
-
-
 
 import newrelic.agent
 path = os.path.join(settings.get("project_root"), 'newrelic.ini')
