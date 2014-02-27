@@ -12,15 +12,15 @@
     </tr>
     {% for p in politicians %}
       <tr>
-        <td>{{ p.name }}</td>
-        <td>{{ p.chamber }}</td>
-        <td>{{ p.state }}</td>
-        <td>{{ p.district }}</td>
-        <td>{{ p.twitter }}</td>
-        <td>{{ p.twitter_ftv }}</td>
-        <td>{{ p.twitter_ftv.email }}</td>
-        <td>{{ p.twitter_ftv.email_password }}</td>
+        <td>{{ p['name'] }}</td>
+        <td>{{ p['chamber'] }}</td>
+        <td>{{ p['state'] }}</td>
+        <td>{{ p['district'] }}</td>
+        <td>{{ p['twitter'] }}</td>
+        <td>{{ p['twitter_ftv'] }}</td>
+        <td>{{ p['twitter_ftv.email'] }}</td>
+        <td>{{ p['twitter_ftv.email_password'] }}</td>
       </tr>
-    {% endfor %}
+    {% end %}
   </table>
-{% endblock %}
+{% end %}

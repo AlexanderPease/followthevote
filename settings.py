@@ -107,7 +107,7 @@ default_options = {
   ],
   'user_capabilities': [], 
   
-  'module_dir': os.path.join(PROJECT_ROOT, 'templates/modules')
+  'module_dir': os.path.join(PROJECT_ROOT, 'templates/modules') #delete!
 }
 
 def get(key):

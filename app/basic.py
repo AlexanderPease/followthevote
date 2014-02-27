@@ -27,6 +27,8 @@ class BaseHandler(tornado.web.RequestHandler):
     kwargs['current_user_can'] = self.current_user_can 
     kwargs['settings'] = settings 
     kwargs['body_location_class'] = ""
+    kwargs['msg'] = ""
+    kwargs['err'] = ""
     if self.request.path == "/":
       kwargs['body_location_class'] = "home"
   

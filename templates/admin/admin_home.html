@@ -1,15 +1,15 @@
-{% extends "base.html" %}
+{% extends "../base.html" %}
 
 {% block body %}
 	Welcome to administrative dashboard for Follow The Vote
 
     {% if msg %}
       <p class="text-success">{{ msg }}</p>
-    {% endif %}
+    {% end %}
 
     {% if err %}
       <p class="text-success">{{ err }}</p>
-    {% endif %}
+    {% end %}
 
 	<ul>
 	  <li>
@@ -20,4 +20,4 @@
 	  </li>
 	</ul>
 
-{% endblock %}
+{% end %}

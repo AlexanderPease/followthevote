@@ -5,7 +5,7 @@ import requests
 from sunlight import congress, congress_deprecated
 from geopy import geocoders
 
-#from db import companiesdb, postsdb, userdb, gmaildb
+from db import politiciandb
 
 
 ###########################
@@ -123,8 +123,8 @@ class Tweet(app.basic.BaseHandler):
                 name = "Representative"
 
             # Find corresponding vote
-            if p.portrait_id in individual_votes:
-                choice = individual_votes[p.portrait_id]
+            if p.bioguide_id in individual_votes:
+                choice = individual_votes[p.bioguide_id]
                 if choice == 'Yea':
                     choice = 'YES'
                 elif choice == 'Nay':
@@ -146,6 +146,6 @@ class Database(app.basic.BaseHandler):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
     else:
-      #politicians = 
+      politicians = politiciandb.get_all()
       return self.render('admin/database.html', politicians=politicians)
 

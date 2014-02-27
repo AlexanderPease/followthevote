@@ -37,19 +37,23 @@ import pymongo, logging
 """
 
 ''' Returns all intros '''
-def get_all():
-	return list(db.politician.find())
+def get_all(spec=None, fields=None):
+	return list(db.politician.find(spec=None, fields=None))
 
-''' Returns politician of given id '''
+''' kwarg must be a dict. Ex: {'twitter_id': 'SenSchumer'}'''
+def get(kwarg):
+    return db.politician.find_one(kwarg)
+
+''' Returns politician of given bioguide_id '''
 def get_by_id(p_id):
-    return db.politician.find_one({'id':p_id})
+    return db.politician.find_one({'bioguide_id':p_id})
 
 ''' Saves an intro to the database. Arg is a dict.
 	Can be brand new or updating existing. '''
 def save(p):
-	if 'id' not in p.keys() or p['id'] == '':
+	if 'bioguide_id' not in p.keys() or p['bioguide_id'] == '':
 		raise Exception
-	return db.politician.update({'id':p['id']}, p, upsert=True)
+	return db.politician.update({'bioguide_id':p['bioguide_id']}, p, upsert=True)
 
 '''
 def remove(intro):
