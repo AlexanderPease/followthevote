@@ -5,6 +5,8 @@
         <h1>Tweet @ Congress</h1>
         </br>
 
+        {{ err }}
+        {{ msg }}
         {% if err is 'zip_code' %}
           <p class="lead text-error">Sorry, '{{ msg }}' is not viable a ZIP code!</p>
           <form action="/" method="get" class="form-search">

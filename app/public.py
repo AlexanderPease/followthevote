@@ -1,6 +1,7 @@
 import app.basic
 from db import politiciandb
 from sunlight import congress 
+from geopy import geocoders
 import re
 import ui_methods 
 
@@ -23,16 +24,15 @@ class Index(app.basic.BaseHandler):
         #district = district_for_address(address, request)    
         g = geocoders.GoogleV3()
         place, (lat, lon) = g.geocode(address)
-        pprint(place) #support multiple locations
         try:
             place, (lat, lon) = g.geocode(address)
-            pprint(place) #support multiple locations
+            print place #support multiple locations?
         except: 
              return self.render('public/index.html', err='bad_address', msg='')
         
         districts = congress.locate_districts_by_lat_lon(lat, lon)
         if len(districts) != 1: 
-            pprint('Multiple districts for single geopoint?!') #debug
+            print 'Multiple districts for single geopoint?!'
             raise Exception
         else:
             district = districts[0]
@@ -47,7 +47,7 @@ class Index(app.basic.BaseHandler):
         
         # Test for single congressional district
         if len(districts) > 1:
-            pprint(str(len(districts)) + ' DISTRICTS IN ZIP CODE') #debug
+            #print(str(len(districts)) + ' DISTRICTS IN ZIP CODE') #debug
             return self.render('public/index.html', err='multiple_districts', msg=zip_code)
         else: 
             district = districts[0]
