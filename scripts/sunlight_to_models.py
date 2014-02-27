@@ -22,11 +22,16 @@ for politician in politicians:
     }
     # Sens don't have district
     if 'district' in politician.keys() and p['title'] is 'Rep':
-        p['district'] = politician['district'],
+        p['district'] = politician['district']
+    else:
+        p['district'] = ""
     if 'twitter_id' in politician.keys():
         p['twitter_id'] = politician['twitter_id']
+    else:
+        p['twitter_id'] = ""
 
     politiciandb.save(p)
+    print 'Added sunlight data for %s' % p['bioguide_id']
 
 ### Add in Twitter handles I found myself
 TWITTER_EXTRA = [
