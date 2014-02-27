@@ -39,7 +39,7 @@ class Application(tornado.web.Application):
       # Twitter auth
       (r"/auth/twitter/?", app.twitter.Auth),
       (r"/twitter", app.twitter.Twitter),
-      (r"/auth/logout/?", app.user.LogOut),#need?
+      (r"/auth/logout/?", app.twitter.LogOut),
 
       # Admin
       (r"/admin", app.admin.AdminHome),
@@ -50,10 +50,6 @@ class Application(tornado.web.Application):
       # Public
       (r'/$', app.public.Index),
     ]
-    
-    app_settings.update({
-      'ui_modules': templates.template_modules()
-    })
 
     tornado.web.Application.__init__(self, handlers, **app_settings)
 

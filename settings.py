@@ -46,7 +46,7 @@ default_options = {
   
   'project_root': os.path.abspath(os.path.join(os.path.dirname(__file__))),
 
-  # twiter details
+  # twitter details
   'twitter_consumer_key' : '',
   'twitter_consumer_secret' : '',
 

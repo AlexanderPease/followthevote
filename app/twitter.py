@@ -78,3 +78,12 @@ class Twitter(app.basic.BaseHandler):
 
     # bounce to account
     self.redirect(bounce_to)
+
+###########################
+### LOG USER OUT OF ACCOUNT
+### /auth/logout
+###########################
+class LogOut(app.basic.BaseHandler):
+  def get(self):
+    self.clear_all_cookies()
+    self.redirect('/')
