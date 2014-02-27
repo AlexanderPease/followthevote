@@ -4,22 +4,19 @@ import tornado.httpclient
 import tornado.ioloop
 import tornado.options
 import tornado.web
-
 import logging
 
 # settings is required/used to set our environment
 import settings 
-
-import app.public
-import app.user
-import app.admin
-import app.api
-import app.basic
-import app.general
-import app.twitter
-import app.error
 import templates
-import app.redirects
+
+import app.basic
+import app.public
+import app.admin
+import app.twitter
+import app.user
+
+
 
 import newrelic.agent
 path = os.path.join(settings.get("project_root"), 'newrelic.ini')
@@ -39,106 +36,18 @@ class Application(tornado.web.Application):
     }
 
     handlers = [
-      # redirect stuff (old links + shortcuts)
-      (r'/(?P<year>[0-9]+)/(?P<month>[0-9]+)/(?P<slug>[\w\s-]+).php$', app.redirects.RedirectPosts),
-      (r'/pages/.*$', app.redirects.RedirectMappings),
-      (r'/team.*$', app.redirects.RedirectMappings),
-      (r'/investments$', app.redirects.RedirectMappings),
-      (r'/portfolio/$', app.redirects.RedirectMappings),
-      (r'/about/$', app.redirects.RedirectMappings),
-      (r'/network/$', app.redirects.RedirectMappings),
-      (r'/jobs/$', app.redirects.RedirectMappings),
-      (r'/focus$', app.redirects.RedirectMappings),
-      (r'/office$', app.redirects.RedirectMappings),
-      (r'/(?P<name>albert|andy|brad|brian|brittany|conference|live|conferenceroom|eventspace|fred|john|dbrary|nick|zander|sqwiggle)$', app.redirects.HangoutShortcuts),
-      
-      # usv-specific admin
-      (r"/admin/company", app.admin.AdminCompany),
-      (r"/admin/gmail", app.admin.Gmail),
-      (r"/admin/gmailapi", app.admin.GmailAPI),
-
-      #general site pages
-      (r"/jobs", app.general.Jobs),
-      (r"/portfolio", app.general.Portfolio),   
-
-      # network
-      (r"/network", app.network.Welcome),
-
-      # account stuff
-      (r"/auth/email/?", app.user.EmailSettings),
-      (r"/auth/logout/?", app.user.LogOut),
-      (r"/user/(?P<username>[A-z-+0-9]+)/settings/?", app.user.UserSettings),
-      (r"/user/settings?", app.user.UserSettings),
-      (r"/user/(?P<screen_name>[A-z-+0-9]+)", app.user.Profile),
-      (r"/user/(?P<screen_name>[A-z-+0-9]+)/(?P<section>[A-z]+)", app.user.Profile),
-
-      # admin stuff
-      (r"/admin", app.admin.AdminHome),
-      (r"/admin/delete_user", app.admin.DeleteUser),
-      (r"/admin/deleted_posts", app.admin.DeletedPosts),
-      (r"/admin/sort_posts", app.admin.ReCalculateScores),
-      (r"/admin/stats", app.admin.AdminStats),
-      (r"/admin/disqus", app.admin.ManageDisqus),
-      (r"/admin/daily_email", app.admin.DailyEmail),
-      (r"/admin/daily_email/history", app.admin.DailyEmailHistory),
-      (r"/generate_hackpad/?", app.admin.GenerateNewHackpad),
-      (r"/list_hackpads", app.admin.ListAllHackpad),
-      (r"/posts/([^\/]+)/mute", app.admin.Mute),
-      (r"/users/(?P<username>[A-z-+0-9]+)/ban", app.admin.BanUser),
-      (r"/users/(?P<username>[A-z-+0-9]+)/unban", app.admin.UnBanUser),
-      (r"/admin/brittbot", app.brittbot.Index),
-      (r"/admin/brittbot/response", app.brittbot.Response),
-
-      # api stuff
-      (r"/api/incr_comment_count", app.api.DisqusCallback),
-      (r"/api/user_status", app.api.GetUserStatus),
-      (r"/api/voted_users/(.+)", app.api.GetVotedUsers),
-      (r"/api/check_for_url", app.api.CheckForUrl),
-      (r"/api/posts/get_day", app.api.PostsGetDay),
-
-      # disqus stuff
-      (r"/auth/disqus", app.disqus.Auth),
-      (r"/remove/disqus", app.disqus.Remove),
-      (r"/disqus", app.disqus.Disqus),
-      
-      # yammer stuff
-      (r"/auth/yammer", app.yammer.Auth),
-      (r"/remove/yammer", app.yammer.Remove),
-      (r"/yammer", app.yammer.Yammer),
-
-      # search stuff
-      (r"/search", app.search.Search),
-      (r"/tagged/(.+)", app.search.ViewByTag),
-      (r"/tags", app.search.ViewByTag),
-
-      # stats stuff
-      (r"/stats/shares/weekly", app.stats.WeeklyShareStats),
-
-      # twitter stuff
+      # Twitter auth
       (r"/auth/twitter/?", app.twitter.Auth),
       (r"/twitter", app.twitter.Twitter),
+      (r"/auth/logout/?", app.user.LogOut),#need?
 
-      # post stuff
-      (r"/featured.*$", app.posts.FeaturedPosts),
-      (r"/feed/(?P<feed_type>[A-z-+0-9]+)$", app.posts.Feed),
-      (r"/feed$", app.posts.Feed),
-      (r"/posts/new$", app.posts.NewPost),
-      (r"/bookmarklet$", app.posts.NewPost),
-      (r"/(?P<sort_by>hot)$", app.posts.ListPosts),
-      (r"/(?P<sort_by>new)$", app.posts.ListPostsNew),
-      (r"/(?P<sort_by>sad)$", app.posts.ListPosts),
-      (r"/(?P<sort_by>[^\/]+)/page/(?P<page>[0-9]+)$", app.posts.ListPosts),
-      (r"/posts/([^\/]+)/upvote", app.posts.Bump),
-      (r"/posts/([^\/]+)/bump", app.posts.Bump),
-      (r"/posts/([^\/]+)/unbump", app.posts.UnBump),
-      (r"/posts/([^\/]+)/superupvote", app.posts.SuperUpVote),
-      (r"/posts/([^\/]+)/superdownvote", app.posts.SuperDownVote),
-      (r"/posts/([^\/]+)/edit", app.posts.EditPost),
-      (r"/day/(?P<day>[A-z-+0-9]+)$", app.posts.ListPosts),
-      (r"/posts/(.+)", app.posts.ViewPost),
-      (r"/posts$", app.posts.ListPosts),
-      (r"/widget/demo.*?", app.posts.WidgetDemo),
-      (r"/widget.*?", app.posts.Widget),
+      # Admin
+      (r"/admin", app.admin.AdminHome),
+      (r"/admin/votes", app.admin.Votes),
+      (r"/admin/tweet", app.admin.Tweet),
+      (r"/admin/database", app.admin.Database),
+
+      # Public
       (r'/$', app.public.Index),
     ]
     
