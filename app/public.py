@@ -16,7 +16,7 @@ class Index(app.basic.BaseHandler):
 
     # If no zip code or address argument, then return the basic homepage
     if not zip_code and not address:
-        return self.render('public/index.html', err='', msg='')
+        return self.render('public/index.html')
 
     # Address takes precedence over ZIP code for finding legislators
     # User is only asked for address if ZIP code contains multiple districts
@@ -28,7 +28,7 @@ class Index(app.basic.BaseHandler):
             place, (lat, lon) = g.geocode(address)
             print place #support multiple locations?
         except: 
-             return self.render('public/index.html', err='bad_address', msg='')
+             return self.render('public/index.html', err='bad_address')
         
         districts = congress.locate_districts_by_lat_lon(lat, lon)
         if len(districts) != 1: 

@@ -15,7 +15,7 @@ from db import politiciandb
 class AdminHome(app.basic.BaseHandler):
   @tornado.web.authenticated
   def get(self):
-    print 'admin'
+    print self.current_user
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
     else:
