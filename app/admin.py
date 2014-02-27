@@ -146,6 +146,6 @@ class Database(app.basic.BaseHandler):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
     else:
-      politicians = politiciandb.get_all()
+      politicians = politiciandb.find_all()
       return self.render('admin/database.html', politicians=politicians)
 

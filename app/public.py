@@ -1,5 +1,8 @@
 import app.basic
-#from db import companiesdb, jobsdb, postsdb
+from db import politiciandb
+from sunlight import congress 
+import re
+import ui_methods 
 
 
 ########################
@@ -27,7 +30,7 @@ class Index(app.basic.BaseHandler):
         except: 
              return self.render('public/index.html', err='bad_address', msg='')
         
-        districts = congress_deprecated.districts_for_lat_lon(lat, lon)
+        districts = congress.locate_districts_by_lat_lon(lat, lon)
         if len(districts) != 1: 
             pprint('Multiple districts for single geopoint?!') #debug
             raise Exception
@@ -36,7 +39,7 @@ class Index(app.basic.BaseHandler):
 
     # ZIP code method
     else:
-        districts = congress_deprecated.districts_for_zip(zip_code)
+        districts = congress.locate_districts_by_zip(zip_code)
         # Test if zip_code is valid
         regex = re.compile('\d{5,5}')
         if not (regex.match(zip_code) and districts):
@@ -49,10 +52,10 @@ class Index(app.basic.BaseHandler):
         else: 
             district = districts[0]
         
-    
     # Get representatives and pass to results.html
-    #representative = Politician.objects.get(title='Rep', state=district['state'], district=district['number'])
-    #senators = Politician.objects.filter(title='Sen', state=district['state'])
-    #legislators = {'representative': representative, 'senator1':senators[0], 'senator2':senators[1]}
-    #return render_to_response('results.html', {'results': legislators}, context_instance=RequestContext(request))
-    return self.render('public/results.html')
+    representative = politiciandb.find_one({'title': 'Rep', 'state': district['state'], 'district': district['district']})
+    senators = politiciandb.find_all({'title': 'Sen', 'state': district['state']})
+    print senators
+    if len(senators) != 2:
+        raise Exception
+    return self.render('public/results.html', results=[representative, senators[0], senators[1]], ordinal=ui_methods.ordinal)

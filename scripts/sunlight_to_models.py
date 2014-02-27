@@ -21,7 +21,7 @@ for politician in politicians:
         'bioguide_id': politician['bioguide_id'],
     }
     # Sens don't have district
-    if 'district' in politician.keys() and p['title'] is 'Rep':
+    if 'district' in politician.keys() and p['title'] == 'Rep':
         p['district'] = politician['district']
     else:
         p['district'] = ""
@@ -77,7 +77,7 @@ TWITTER_EXTRA = [
     ('Radel', 'treyradel'),
     ]
     
-for p in politiciandb.get_all():
+for p in politiciandb.find_all():
     for pair in TWITTER_EXTRA:
         if p['last_name'] == pair[0]:
             p['twitter_id'] = pair[1]
@@ -145,7 +145,7 @@ states = {
         'WY': 'Wyoming'
 }
 
-for p in politiciandb.get_all():
+for p in politiciandb.find_all():
     p['name'] = p['title'] + ". " + p['first_name'] + " " + p['last_name']
     p['brief_name'] = p['title'] + ". " + p['last_name']
     p['full_state_name'] = states[p['state']]

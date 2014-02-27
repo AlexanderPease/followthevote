@@ -36,16 +36,17 @@ import pymongo, logging
 
 """
 
-''' Returns all intros '''
-def get_all(spec=None, fields=None):
-	return list(db.politician.find(spec=None, fields=None))
+''' Returns all politicians, unless filtered '''
+def find_all(spec=None, fields=None):
+	print spec
+	return list(db.politician.find(spec=spec, fields=fields))
 
 ''' kwarg must be a dict. Ex: {'twitter_id': 'SenSchumer'}'''
-def get(kwarg):
+def find_one(kwarg):
     return db.politician.find_one(kwarg)
 
 ''' Returns politician of given bioguide_id '''
-def get_by_id(p_id):
+def find_by_id(p_id):
     return db.politician.find_one({'bioguide_id':p_id})
 
 ''' Saves an intro to the database. Arg is a dict.

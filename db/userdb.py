@@ -39,7 +39,7 @@ import urllib2
 """
 
 ''' Returns all users '''
-def get_all():
+def find_all():
   return db.user_info.find()
 
 def get_user_by_id_str(id_str):

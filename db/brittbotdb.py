@@ -4,7 +4,7 @@ from mongo import db
 import pymongo, logging
 
 ''' Returns all intros '''
-def get_all():
+def find_all():
 	return list(db.brittbot.find())
 
 ''' Returns intro from given id '''
