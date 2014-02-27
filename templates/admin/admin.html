@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block body %}
+	Welcome to administrative dashboard for Follow The Vote
+
+    {% if msg %}
+      <p class="text-success">{{ msg }}</p>
+    {% endif %}
+
+    {% if err %}
+      <p class="text-success">{{ err }}</p>
+    {% endif %}
+
+	<ul>
+	  <li>
+	    <a href="/admin/votes">Votes</a>
+	  </li>
+	  <li>
+	    <a href="/admin/database">Database</a>
+	  </li>
+	</ul>
+
+{% endblock %}
