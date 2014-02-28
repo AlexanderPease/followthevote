@@ -26,17 +26,20 @@ class AdminHome(app.basic.BaseHandler):
 ### /admin/votes
 ###########################
 class Votes(app.basic.BaseHandler):
-  #@tornado.web.authenticated
+  @tornado.web.authenticated
   def get(self):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
-    else:
-      form = self.get_votes_form()
-      msg = 'What shall we tweet about? Search the Congressional Archives'
-      return self.render('admin/votes.html', form=form, msg=msg, votes=[])
+
+    form = self.get_votes_form()
+    msg = 'What shall we tweet about? Search the Congressional Archives'
+    return self.render('admin/votes.html', form=form, msg=msg, votes=[])
 
   @tornado.web.authenticated
   def post(self):
+    if self.current_user not in settings.get('staff'):
+      self.redirect('/')
+
     form = self.get_votes_form()
 
     # Sunlight API pukes on null args, so sanitize
@@ -78,13 +81,19 @@ class Tweet(app.basic.BaseHandler):
   def get(self):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
-    else:
-      #vote = self.get_argument # vote = request.GET # assumes request comes from votes(request)
-      reps_account_placeholder = "@[representative's account]"
-      choice_placeholder = '[yes/no]'
-      tweet_beginning = "%s voted %s on " % (reps_account_placeholder, choice_placeholder)
-      form = TweetForm()
-      return self.render('admin/tweet.html', vote=vote, tweet_beginning=tweet_beginning, form=form)
+
+    # Get all arguments
+    args = self.request.arguments # Assumes request comes from votes(request)
+    vote = {}
+    for arg in args.items():
+      vote[arg[0]] = arg[1][0] # This is difficult because all v are a list, even if only single v for each k
+
+    
+    reps_account_placeholder = "@[representative's account]"
+    choice_placeholder = '[yes/no]'
+    tweet_beginning = "%s voted %s on " % (reps_account_placeholder, choice_placeholder)
+    form = self.get_tweet_form()
+    return self.render('admin/tweet.html', vote=vote, tweet_beginning=tweet_beginning, form=form)
 
   @tornado.web.authenticated
   def post(self):
@@ -143,6 +152,10 @@ class Tweet(app.basic.BaseHandler):
 
         return render_to_response('admin.html', {'msg': 'All accounts tweeted successfully!'}, 
     context_instance=RequestContext(request))
+
+  ''' Gets arguments for votes form '''
+  def get_tweet_form(self):
+      return {'text': self.get_argument('text', '')}
      
 
 ###########################

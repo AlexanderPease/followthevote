@@ -15,11 +15,9 @@
     <div id="tweet_beginning">
       {{ tweet_beginning }}...
     </div>
-    <form method="post" action="">{% csrf_token %}
-      {{ form.non_field_errors }}
+    <form method="post" action="">
       <div class="fieldWrapper">
-          {{ form.text }}
-          {{ form.text.errors }}
+          <textarea name="text" id="id_text" placeholder="{{ form['text'] }}" rows="4" class="field span8"></textarea>
       </div>
       <span id="tweet_counter"></span>
       </br>
@@ -27,12 +25,12 @@
     </form>
 
     <h4>Suggested info</h4>
-    Question: <a href="{{ vote.url }}" target="_blank">{{ vote.question }}</a></br>
-    Roll ID: {{ vote.roll_id }}</br>
-    Bill ID: {{ vote.bill_id }}</br>
-    Chamber: {{ vote.chamber|capfirst }}</br>
-    Voted at: {{ vote.voted_at }}</br>
-    Result: {{ vote.result }}</br>
+    Question: <a href="{{ vote['url'] }}" target="_blank">{{ vote['question'] }}</a></br>
+    Roll ID: {{ vote['roll_id'] }}</br>
+    Bill ID: {{ vote['bill_id'] }}</br>
+    Chamber: {{ vote['chamber'].capitalize() }}</br>
+    Voted at: {{ vote['voted_at'] }}</br>
+    Result: {{ vote['result'] }}</br>
         
   {% end %}
 
