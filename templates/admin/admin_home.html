@@ -1,7 +1,9 @@
 {% extends "../base.html" %}
 
 {% block body %}
-	Welcome to administrative dashboard for Follow The Vote
+	
+	<h4>Administrative Dashboard</h4>
+	<p>Logged in as {{ current_user }}</p>
 
     {% if msg %}
       <p class="text-success">{{ msg }}</p>

@@ -15,7 +15,6 @@ from db import politiciandb
 class AdminHome(app.basic.BaseHandler):
   @tornado.web.authenticated
   def get(self):
-    print self.current_user
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
     else:
@@ -27,38 +26,48 @@ class AdminHome(app.basic.BaseHandler):
 ### /admin/votes
 ###########################
 class Votes(app.basic.BaseHandler):
-  @tornado.web.authenticated
+  #@tornado.web.authenticated
   def get(self):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
     else:
-      form = VotesForm() # An unbound form
+      form = self.get_votes_form()
       msg = 'What shall we tweet about? Search the Congressional Archives'
-      return self.render('admin/votes.html', form=form, msg=msg)
+      return self.render('admin/votes.html', form=form, msg=msg, votes=[])
 
   @tornado.web.authenticated
   def post(self):
-    form = VotesForm(request.POST) # A form bound to the POST data
-    if form.is_valid():
-      # Sunlight API pukes on null args, so sanitize
-      kwargs = {'per_page': 50}
-      for k, v in form.cleaned_data.items():
-        if v:
-          kwargs[k] = v
+    form = self.get_votes_form()
 
-      # Query Sunlight API
-      votes = congress.votes(**kwargs)
+    # Sunlight API pukes on null args, so sanitize
+    kwargs = {'per_page': 50}
+    for k, v in form.iteritems(): #.cleaned_data.items():
+      if v:
+        kwargs[k] = v
 
-      # Post-query logic
-      if not votes:
-        err = 'No search results, try again'
-        return self.render('admin/votes.html', form='form', err='err')
-      if len(votes) > 1:
-        msg = 'Found %s results, please choose the correct one:' % len(votes)
-        # TODO: returns max 50 results on first page. Give option to search further pages
-      else:
-        msg = 'Please confirm that this is the correct vote'
-        return self.render('admin/votes.html', msg=msg, votes=votes)
+    # Query Sunlight API
+    votes = congress.votes(**kwargs)
+
+    # Post-query logic
+    if not votes:
+      err = 'No search results, try again'
+      return self.render('admin/votes.html', form=form, err='err')
+    if len(votes) > 1:
+      msg = 'Found %s results, please choose the correct one:' % len(votes)
+      # TODO: returns max 50 results on first page. Give option to search further pages
+    else:
+      msg = 'Please confirm that this is the correct vote'
+    return self.render('admin/votes.html', msg=msg, votes=votes, form=form)
+
+  ''' Gets arguments for votes form '''
+  def get_votes_form(self):
+      # Form fields
+      form = {}
+      form['roll_id'] = self.get_argument('roll_id', '')
+      form['number'] = self.get_argument('number', '')
+      form['year'] = self.get_argument('year', '')
+      form['chamber'] = self.get_argument('chamber', '')
+      return form
 
 ###########################
 ### Given a vote, tweet it for all accounts!
