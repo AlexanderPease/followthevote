@@ -40,13 +40,36 @@ class BaseHandler(tornado.web.RequestHandler):
     
   def get_current_user(self):
     return self.get_secure_cookie("username")
+
+  ''' Get all arguments and returns in dict form.
+      This is difficult because all v are a list, even if only single v for each k'''
+  def get_all_arguments(self):
+    args = self.request.arguments # Assumes request comes from votes(request)
+    results = {}
+    for arg in args.items():
+      results[arg[0]] = arg[1][0] 
+    return results
       
-    
-  def is_blacklisted(self, screen_name):
-    u = userdb.get_user_by_screen_name(screen_name)
-    if u and 'user' in u.keys() and 'is_blacklisted' in u['user'].keys() and u['user']['is_blacklisted']:
-      return True
-    return False
+  ''' Optional HTML body supercedes plain text body in SendGrid API'''
+  def send_email(self, from_user, to_user, subject, text, html=None, from_name=None):
+    if settings.get('environment') != "prod":
+      logging.info("If this were prod, we would have sent email to %s" % to_user)
+      return
+    else:
+        return requests.post(
+          "https://sendgrid.com/api/mail.send.json",
+          data={
+            "api_user":settings.get('sendgrid_user'),
+            "api_key":settings.get('sendgrid_secret'),
+            "from": from_user,
+            "to": to_user,
+            "subject": subject,
+            "text": text,
+            "html": html,
+            "fromname": from_name
+          },
+          verify=False
+        )
 
   def current_user_can(self, capability):
     """

@@ -44,7 +44,7 @@ class Votes(app.basic.BaseHandler):
 
     # Sunlight API pukes on null args, so sanitize
     kwargs = {'per_page': 50}
-    for k, v in form.iteritems(): #.cleaned_data.items():
+    for k, v in form.iteritems():
       if v:
         kwargs[k] = v
 
@@ -82,16 +82,9 @@ class Tweet(app.basic.BaseHandler):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
 
-    # Get all arguments
-    args = self.request.arguments # Assumes request comes from votes(request)
-    vote = {}
-    for arg in args.items():
-      vote[arg[0]] = arg[1][0] # This is difficult because all v are a list, even if only single v for each k
-
-    
-    reps_account_placeholder = "@[representative's account]"
-    choice_placeholder = '[yes/no]'
-    tweet_beginning = "%s voted %s on " % (reps_account_placeholder, choice_placeholder)
+    # vote is defined as the GET parameters passed into Tweet()
+    vote = self.get_all_arguments() # Assumes request comes from votes(request)
+    tweet_beginning = self.get_tweet_beginning()
     form = self.get_tweet_form()
     return self.render('admin/tweet.html', vote=vote, tweet_beginning=tweet_beginning, form=form)
 
@@ -99,63 +92,69 @@ class Tweet(app.basic.BaseHandler):
   def post(self):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
-    else:
-      #vote = self.get_argument # vote = request.GET # assumes request comes from votes(request)
-      reps_account_placeholder = "@[representative's account]"
-      choice_placeholder = '[yes/no]'
-      tweet_beginning = "%s voted %s on " % (reps_account_placeholder, choice_placeholder)
-      form = TweetForm(request.POST)
-      if not form.is_valid():
-        err = 'Submitted invalid tweet!'
-        self.render('admin/tweet.html', err='err', tweet_beginning=tweet_beginning, vote=vote, form=form)
-      else: 
-        # Create base tweet
-        tweet_text = form.cleaned_data['text']
-        tweet_template = tweet_beginning + tweet_text
+    
+    vote = self.get_all_arguments()
+    tweet_beginning = self.get_tweet_beginning()
+    tweet_text = self.get_argument('text','')
 
-        # Get votes for each politician from Sunlight
-        kwargs = {'fields': 'voter_ids'}
-        for k, v in request.GET.iteritems():
-            if v:
-                kwargs[k] = v
-        individual_votes = congress.votes(**kwargs)
-        if len(individual_votes) != 1:
-            print 'Error finding votes'
-            return
-            #TODO figure out error handling or better transfer method
-        individual_votes = individual_votes[0]['voter_ids'] # returns a dict with bioguide_ids for keys
 
-        # Tweet for every applicable politician
-        for twitter_ftv in Twitter_FTV.objects.all().exclude(handle="FollowTheVote"):
-            p = twitter_ftv.politician
-            # Hierarchy of name choosing
-            if len(p.brief_name()) <= 16:
-                name = p.brief_name()
-            elif p.twitter:
-                name = twitter
-            elif len(p.last_name) <= 16:
-                name = p.last_name
-            elif p.title == 'sen':
-                name = "Senator"
-            else:
-                name = "Representative"
+    if len(tweet_text) > 110: # poorly hardcoded. calculated from get_tweet_beginning()
+      err = 'Some tweets will exceed 140 characters in length!'
+      return self.render('admin/tweet.html', err='err', tweet_beginning=tweet_beginning, vote=vote, form=self.get_tweet_form)
 
-            # Find corresponding vote
-            if p.bioguide_id in individual_votes:
-                choice = individual_votes[p.bioguide_id]
-                if choice == 'Yea':
-                    choice = 'YES'
-                elif choice == 'Nay':
-                    choice == 'NO'
-                tweet = tweet_template.replace(reps_account_placeholder, name).replace(choice_placeholder, choice)
-                twitter_ftv.tweet(tweet)
+    else: 
+      tweet_template = tweet_beginning + tweet_text
 
-        return render_to_response('admin.html', {'msg': 'All accounts tweeted successfully!'}, 
-    context_instance=RequestContext(request))
+      # Get votes for each politician from Sunlight
+      #vote['fields'] = 'voter_ids'
+      #for k, v in request.GET.iteritems():
+      #    if v:
+      #        kwargs[k] = v
+      print vote
+      individual_votes = congress.votes(**vote)
+      print individual_votes
+      if len(individual_votes) != 1:
+          print 'Error finding votes'
+          return
+          #TODO figure out error handling or better transfer method
+      individual_votes = individual_votes[0]['voter_ids'] # returns a dict with bioguide_ids for keys
+
+      # Tweet for every applicable politician
+      for twitter_ftv in Twitter_FTV.objects.all().exclude(handle="FollowTheVote"):
+          p = twitter_ftv.politician
+          # Hierarchy of name choosing
+          if len(p.brief_name()) <= 16:
+              name = p.brief_name()
+          elif p.twitter:
+              name = twitter
+          elif len(p.last_name) <= 16:
+              name = p.last_name
+          elif p.title == 'sen':
+              name = "Senator"
+          else:
+              name = "Representative"
+
+          # Find corresponding vote
+          if p.bioguide_id in individual_votes:
+              choice = individual_votes[p.bioguide_id]
+              if choice == 'Yea':
+                  choice = 'YES'
+              elif choice == 'Nay':
+                  choice == 'NO'
+              tweet = tweet_template.replace(reps_account_placeholder, name).replace(choice_placeholder, choice)
+              twitter_ftv.tweet(tweet)
+
+      return self.render('admin.html', msg='All accounts tweeted successfully!') 
 
   ''' Gets arguments for votes form '''
   def get_tweet_form(self):
-      return {'text': self.get_argument('text', '')}
+      return {'tweet_text': self.get_argument('tweet_text', '')}
+
+  ''' Get placeholder  '''
+  def get_tweet_beginning(self):
+    reps_account_placeholder = "@[representative's account]"
+    choice_placeholder = '[yes/no]'
+    return "%s voted %s on " % (reps_account_placeholder, choice_placeholder)
      
 
 ###########################
