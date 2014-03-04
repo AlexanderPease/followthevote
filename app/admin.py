@@ -2,7 +2,7 @@ import app.basic
 import tornado.web
 import settings
 import requests
-from sunlight import congress, congress_deprecated
+from sunlight import congress
 from geopy import geocoders
 
 from db import politiciandb
@@ -82,8 +82,7 @@ class Tweet(app.basic.BaseHandler):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
 
-    # vote is defined as the GET parameters passed into Tweet()
-    vote = self.get_all_arguments() # Assumes request comes from votes(request)
+    vote = self.get_vote() # vote is defined as the GET parameters passed into Tweet(), except tweet_text
     tweet_beginning = self.get_tweet_beginning()
     form = self.get_tweet_form()
     return self.render('admin/tweet.html', vote=vote, tweet_beginning=tweet_beginning, form=form)
@@ -93,26 +92,21 @@ class Tweet(app.basic.BaseHandler):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
     
-    vote = self.get_all_arguments()
+    vote = self.get_vote()
     tweet_beginning = self.get_tweet_beginning()
-    tweet_text = self.get_argument('text','')
+    tweet_text = self.get_argument('tweet_text','')
 
 
     if len(tweet_text) > 110: # poorly hardcoded. calculated from get_tweet_beginning()
       err = 'Some tweets will exceed 140 characters in length!'
-      return self.render('admin/tweet.html', err='err', tweet_beginning=tweet_beginning, vote=vote, form=self.get_tweet_form)
+      return self.render('admin/tweet.html', err='err', tweet_beginning=tweet_beginning, vote=vote, form=self.get_tweet_form())
 
     else: 
       tweet_template = tweet_beginning + tweet_text
-
-      # Get votes for each politician from Sunlight
-      #vote['fields'] = 'voter_ids'
-      #for k, v in request.GET.iteritems():
-      #    if v:
-      #        kwargs[k] = v
-      print vote
+      vote['fields'] = 'voter_ids'
       individual_votes = congress.votes(**vote)
       print individual_votes
+
       if len(individual_votes) != 1:
           print 'Error finding votes'
           return
@@ -120,7 +114,8 @@ class Tweet(app.basic.BaseHandler):
       individual_votes = individual_votes[0]['voter_ids'] # returns a dict with bioguide_ids for keys
 
       # Tweet for every applicable politician
-      for twitter_ftv in Twitter_FTV.objects.all().exclude(handle="FollowTheVote"):
+      ### IN FUTURE JUST USE THEIR OWN HANDLE
+      for twitter_ftv in ftv_politiciandb.get_all():
           p = twitter_ftv.politician
           # Hierarchy of name choosing
           if len(p.brief_name()) <= 16:
@@ -145,6 +140,13 @@ class Tweet(app.basic.BaseHandler):
               twitter_ftv.tweet(tweet)
 
       return self.render('admin.html', msg='All accounts tweeted successfully!') 
+
+
+  ''' Vote is defined as all arguments except tweet_text '''
+  def get_vote(self):
+    vote = self.get_all_arguments()
+    del vote['tweet_text']
+    return vote
 
   ''' Gets arguments for votes form '''
   def get_tweet_form(self):
