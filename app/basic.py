@@ -42,9 +42,9 @@ class BaseHandler(tornado.web.RequestHandler):
     return self.get_secure_cookie("username")
 
   ''' Get all arguments and returns in dict form.
-      This is difficult because all v are a list, even if only single v for each k'''
+      This is difficult because each v is a list, even if only single v for each k'''
   def get_all_arguments(self):
-    args = self.request.arguments # Assumes request comes from votes(request)
+    args = self.request.arguments 
     results = {}
     for arg in args.items():
       results[arg[0]] = arg[1][0] 
@@ -71,6 +71,7 @@ class BaseHandler(tornado.web.RequestHandler):
           verify=False
         )
 
+  # Not currentl used. OLD from usv app
   def current_user_can(self, capability):
     """
     Tests whether a user can do a certain thing.

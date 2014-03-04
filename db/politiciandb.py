@@ -36,6 +36,10 @@ import pymongo, logging
 
 """
 
+###########################
+### Database methods
+###########################
+
 ''' Returns all politicians, unless filtered '''
 def find_all(spec=None, fields=None):
 	print spec
@@ -58,7 +62,20 @@ def save(p):
 
 '''
 def remove(intro):
-	if 'id' in intro.keys():
-		return db.brittbot.remove({'id':intro['id']})
+  if 'id' in intro.keys():
+    return db.brittbot.remove({'id':intro['id']})
 '''
+
+###########################
+### Individual property methods
+###########################
+
+''' Politician's own twitter handle '''
+def twitter(p):
+  if 'twitter' in p.keys():
+    return p['twitter']
+  else:
+    return None
+
+
 

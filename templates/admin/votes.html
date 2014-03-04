@@ -38,16 +38,19 @@
   </br>
 
   {% if form %}
-    <form method="post" action="">
-        <label>Chamber</label>
-        <select name=​"chamber">​
-          <option value selected=​"selected">​---​</option>​
-          <option value="senate">​Senate</option>​
-          <option value=​"house">​House</option>​
-        </select>
+    <form method="POST" action="">
+      <input type="text" name="test">
 
-        </br>
-        <button type="submit" class="btn btn-primary">Search</button>
+
+      <label>Chamber</label>
+      <select name=​"chamber">​
+        <option>​---​</option>​
+        <option value="senate">​Senate</option>​
+        <option value=​"house">​House</option>​
+      </select>
+
+      </br>
+      <button type="submit" class="btn btn-primary">Search</button>
     </form>
   {% end %}
 

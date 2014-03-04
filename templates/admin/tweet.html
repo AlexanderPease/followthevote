@@ -15,7 +15,7 @@
     <div id="tweet_beginning">
       {{ tweet_beginning }}...
     </div>
-    <form method="post" action="">
+    <form method="POST" action="">
       <div class="fieldWrapper">
           <textarea name="tweet_text" id="id_tweet_text" rows="4" class="field span8">{{ form['tweet_text'] }}</textarea>
       </div>
@@ -49,10 +49,10 @@
 
     function tweet_counter() {
       max_length = 140;
-      tweet_beginning = $("#tweet_beginning")
+      //tweet_beginning = $("#tweet_beginning")
+      tweet_beginning = 30; // hardcoded because actual text doesn't match potential length
       tweet_input = $('#id_tweet_text').val();
-      tweet = tweet_beginning + tweet_input
-      char_remaining = max_length - tweet.length;
+      char_remaining = max_length - tweet_input.length - tweet_beginning;
       $('#tweet_counter').text(char_remaining + " characters left");
       
       // styling
