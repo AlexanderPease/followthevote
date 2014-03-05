@@ -5,6 +5,7 @@ import simplejson as json
 import os
 import httplib
 import logging
+from postmark import PMMail
 
 from db import userdb
 
@@ -49,8 +50,19 @@ class BaseHandler(tornado.web.RequestHandler):
     for arg in args.items():
       results[arg[0]] = arg[1][0] 
     return results
+
+  ''' Sends email using PostMark'''
+  def send_email(self, to, subject, text_body, sender="postmark@followthevote.org",):
+    message = PMMail(api_key = settings.get('postmark_api_key'),
+                   sender = sender,
+                   to = to,
+                   subject = subject,
+                   text_body = text_body,
+                   tag = None)
+    message.send()
       
   ''' Optional HTML body supercedes plain text body in SendGrid API'''
+  '''
   def send_email(self, from_user, to_user, subject, text, html=None, from_name=None):
     if settings.get('environment') != "prod":
       logging.info("If this were prod, we would have sent email to %s" % to_user)
@@ -70,6 +82,7 @@ class BaseHandler(tornado.web.RequestHandler):
           },
           verify=False
         )
+    '''
 
   # Not currentl used. OLD from usv app
   def current_user_can(self, capability):

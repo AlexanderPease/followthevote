@@ -55,7 +55,7 @@ default_options = {
   'disqus_secret_key': '',
   'disqus_short_code': '',
 
-  # sendgrid details
+  # postmark details
   'sendgrid_user': os.environ.get("SENDGRID_USER"),
   'sendgrid_secret': os.environ.get("SENDGRID_SECRET"),
 

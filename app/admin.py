@@ -195,6 +195,7 @@ class Tweet(app.basic.BaseHandler):
 class Database(app.basic.BaseHandler):
   @tornado.web.authenticated
   def get(self):
+    self.send_email('alexander@usv.com', 'test postmark', 'success!')
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
     else:
