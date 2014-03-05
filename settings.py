@@ -47,8 +47,8 @@ default_options = {
   'project_root': os.path.abspath(os.path.join(os.path.dirname(__file__))),
 
   # twitter details
-  'twitter_consumer_key' : '',
-  'twitter_consumer_secret' : '',
+  'twitter_consumer_key' : os.environ.get("TWITTER_CONSUMER_KEY"),
+  'twitter_consumer_secret' : os.environ.get("TWITTER_CONSUMER_SECRET"),
 
   # disqus details
   'disqus_public_key': '',

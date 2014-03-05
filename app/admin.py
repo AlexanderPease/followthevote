@@ -116,41 +116,54 @@ class Tweet(app.basic.BaseHandler):
     else: 
       vote['fields'] = 'voter_ids'
       individual_votes = congress.votes(**vote)
-      print individual_votes
 
       if len(individual_votes) != 1:
-          print 'Error finding votes'
-          raise Exception
+        print 'Error finding votes'
+        raise Exception
           
       individual_votes = individual_votes[0]['voter_ids'] # returns a dict with bioguide_ids for keys
 
       # Tweet for every applicable politician. Yes, this is suboptimal
+      tweeted = {}
       for p in politiciandb.find_all():
+        ### IN FUTURE JUST USE THEIR OWN HANDLE. JUST DON"T WANT EXPOSURE YET
+        # Hierarchy of name choosing
+        if len(p['brief_name']) <= 16:
+            name = p['brief_name']
+        #elif p['twitter']:
+        #    name = p['twitter']
+        elif len(p['last_name']) <= 16:
+            name = p['last_name']
+        elif p['title'] == 'sen':
+            name = "Senator"
+        else:
+            name = "Representative"
 
-          ### IN FUTURE JUST USE THEIR OWN HANDLE. JUST DON"T WANT EXPOSURE YET
-          # Hierarchy of name choosing
-          if len(p['brief_name']) <= 16:
-              name = p['brief_name']
-          #elif p['twitter']:
-          #    name = p['twitter']
-          elif len(p['last_name']) <= 16:
-              name = p['last_name']
-          elif p['title'] == 'sen':
-              name = "Senator"
-          else:
-              name = "Representative"
+        # Find corresponding vote
+        if p['bioguide_id'] in individual_votes:
+          choice = individual_votes[p['bioguide_id']]
+          if choice == 'Yea':
+              choice = 'YES'
+          elif choice == 'Nay':
+              choice = 'NO'
 
-          # Find corresponding vote
-          if p['bioguide_id'] in individual_votes:
-              choice = individual_votes[p['bioguide_id']]
-              if choice == 'Yea':
-                  choice = 'YES'
-              elif choice == 'Nay':
-                  choice == 'NO'
-
-              tweet = tweet_template.replace(REPS_ACCOUNT_PLACEHOLDER, name).replace(CHOICE_PLACEHOLDER, choice)
-              print tweet
-              #twitter_ftv.tweet(tweet)
+          tweet = tweet_template.replace(REPS_ACCOUNT_PLACEHOLDER, name).replace(CHOICE_PLACEHOLDER, choice)
+          success = politiciandb.tweet(p, tweet)
+          # If successfull tweeted, save for entry to database
+          if success:
+            tweeted[p['bioguide_id']] = choice
+      
+      # Save to database
+      save_tweet = {
+        'vote': vote, 
+        'individual_votes': individual_votes,
+        'tweeted': tweeted, # Who actually had FTV accounts, i.e. actually tweeted 
+        'tweet_template': tweet_template,
+        'placeholders': {'reps_account_placeholder': REPS_ACCOUNT_PLACEHOLDER, 'choice_placeholder': CHOICE_PLACEHOLDER},
+        'tweet': tweet # A sample tweet (always from last rep in database to tweet)
+        }
+      print save_tweet
+      tweetdb.save(save_tweet)
 
       return self.render('admin/admin_home.html', msg='All accounts tweeted successfully!') 
 
