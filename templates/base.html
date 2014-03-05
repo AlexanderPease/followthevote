@@ -22,6 +22,9 @@
         <ul class="nav nav-pills pull-right">
           <li class="active"><a href="#">Home</a></li>
           <li><a href="mailto:admin@followthevote.org">Contact</a></li>
+          {% if current_user in settings.get('staff')%}
+            <li><a href="/admin">Admin</a></li>
+          {% end %}
         </ul>
         <h3 class="muted">FollowTheVote.org</h3>
       </div>

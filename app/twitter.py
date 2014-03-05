@@ -42,7 +42,15 @@ class Twitter(app.basic.BaseHandler):
       'key': auth.access_token.key
     }
 
-    # check if we have this user already or not in the system
+    # Do not log in and write to database if not a staff member
+    print screen_name
+    print settings.get('staff')
+    if screen_name not in settings.get('staff'):
+      self.redirect(bounce_to)
+    
+
+    # If a staff member, go through sign-up/log-in flow
+    # Check if we have this user already or not in the system
     user = userdb.get_user_by_screen_name(screen_name)
     if user:
       # set the cookies based on account details

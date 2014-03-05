@@ -58,9 +58,11 @@ def get_newsletter_recipients():
   return list(db.user_info.find({'wants_daily_email': True}))
 
 def create_new_user(user, access_token):
+  print 'create new user'
   return db.user_info.update({'user.id_str': user['id_str']}, {'user':user, 'access_token':access_token, 'email_address':'', 'role':''}, upsert=True)
 
 def save_user(user):
+  print 'save user'
   return db.user_info.update({'user.id_str': user['user']['id_str']}, user)
 
 def get_user_count():

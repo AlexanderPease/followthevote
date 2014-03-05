@@ -6,27 +6,56 @@ import pymongo, logging
 """
 {
     "_id": {
-        "$oid": "530f7c5efd6e45e48ff04c3b"
+        "$oid": "53175ad0fd6e45e48ff05200"
     },
-    "first_name": "Vance",
-    "last_name": "McAllister",
-    "name": "Rep. Vance McAllister",
-    "district": 5,
-    "title": "Rep",
-    "portrait_path": "img/200x250/DEFAULT.jpg",
-    "twitter_id": "RepMcAllister",
-    "bioguide_id": "M001192",
-    "state": "LA",
-    "chamber": "House",
-    "brief_name": "Rep. McAllister",
-    "party": "R",
-    "full_state_name": "Louisiana",
-    "ftv": {
-        "twitter": "FTV_LA5",
-        "email": "LA5@followthevote.org",
-        "password": "statueoflibertyLA5",
-        "access_key": "2291790752-vKBWfp432GoRWZY47m3yXxUefMciaRstS8lrSTf",
-        "access_secret": "CphtWxvKL8XwyP5KeaJOuqufanqJwNCzFyeb3Uf1z6vpm"
+    "tweet_template": "@[representative's account] voted [yes/no] on the Unfunded Mandates Information and Transparency Act of 2013. It passed and now goes to the Senate #FTV",
+    "tweet": "Rep. Clark voted NO on the Unfunded Mandates Information and Transparency Act of 2013. It passed and now goes to the Senate #FTV",
+    "datetime": {
+        "$date": "2014-03-05T12:23:31.828Z"
+    },
+    "individual_votes": {
+        "M000485": "Yea",
+        "L000580": "Nay",
+        "B000911": "Nay",
+        "D000096": "Nay",
+        "D000399": "Nay",
+        ...etc
+    },
+    "vote": {
+        "congress": "113",
+        "source": "http://clerk.house.gov/evs/2014/roll090.xml",
+        "url": "http://clerk.house.gov/evs/2014/roll090.xml",
+        "fields": "voter_ids",
+        "vote_type": "passage",
+        "required": "1/2",
+        "question": "On Passage -- H.R. 899 -- Unfunded Mandates Information and Transparency Act of 2013",
+        "number": "90",
+        "chamber": "house",
+        "result": "Passed",
+        "year": "2014",
+        "voted_at": "2014-02-28T16:31:00Z",
+        "roll_id": "h90-2014",
+        "bill_id": "hr899-113",
+        "roll_type": "On Passage"
+    },
+    "placeholders": {
+        "choice_placeholder": "[yes/no]",
+        "reps_account_placeholder": "@[representative's account]"
+    },
+    "tweeted": {
+        "A000055": "YES",
+        "B000013": "abstained",
+        "B000213": "YES",
+        "M001192": "YES",
+        "A000367": "YES",
+        "B001256": "YES",
+        "B001282": "YES",
+        "B001252": "YES",
+        "B001242": "NO",
+        "B001269": "YES",
+        "B001279": "YES",
+        "M000087": "NO",
+        "A000369": "YES"
     }
 }
 
