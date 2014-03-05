@@ -1,11 +1,11 @@
 import app.basic
 import tornado.web
 import settings
-import requests
+import requests, datetime
 from sunlight import congress
 from geopy import geocoders
 
-from db import politiciandb
+from db import politiciandb, tweetdb
 
 ###########################
 ### List the available admin tools
@@ -146,6 +146,9 @@ class Tweet(app.basic.BaseHandler):
               choice = 'YES'
           elif choice == 'Nay':
               choice = 'NO'
+          elif choice == 'Not Voting':
+            choice = 'abstained'
+            tweet_template.replace('voted ', '') # get rid of voting verb
 
           tweet = tweet_template.replace(REPS_ACCOUNT_PLACEHOLDER, name).replace(CHOICE_PLACEHOLDER, choice)
           success = politiciandb.tweet(p, tweet)
@@ -155,14 +158,14 @@ class Tweet(app.basic.BaseHandler):
       
       # Save to database
       save_tweet = {
+        'datetime': datetime.datetime.now(),
         'vote': vote, 
-        'individual_votes': individual_votes,
         'tweeted': tweeted, # Who actually had FTV accounts, i.e. actually tweeted 
         'tweet_template': tweet_template,
         'placeholders': {'reps_account_placeholder': REPS_ACCOUNT_PLACEHOLDER, 'choice_placeholder': CHOICE_PLACEHOLDER},
-        'tweet': tweet # A sample tweet (always from last rep in database to tweet)
+        'tweet': tweet, # A sample tweet (always from last rep in database to tweet)
+        'individual_votes': individual_votes,
         }
-      print save_tweet
       tweetdb.save(save_tweet)
 
       return self.render('admin/admin_home.html', msg='All accounts tweeted successfully!') 

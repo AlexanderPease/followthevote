@@ -3,7 +3,7 @@ import json
 import settings
 from mongo import db
 import pymongo, logging
-import twitter # bear/python-twitter
+import twitter as python_twitter # bear/python-twitter
 
 """
 {
@@ -80,23 +80,17 @@ def tweet(p, t):
   api = login_twitter(p)
   if api:
     try:
-      #status = api.PostUpdate(status)
-      print '@%s posted status' % self.handle
+      status = api.PostUpdate(t)
+      print '@%s posted status: %s' % (p['ftv']['twitter'], t)
       return True
     except:
-      print '@%s FAILED to post status: %s' % (self.handle, status)
+      print '@%s FAILED to post status: %s' % (p['ftv']['twitter'], t)
       return False
 
 ''' Log in to twitter w/ this politician's FTV account '''
 def login_twitter(p):
-  api = twitter.Api(consumer_key=settings.get('twitter_consumer_key'),
-                consumer_secret=settings.get('twitter_consumer_secret'),
-                access_token_key=p['ftv']['access_key'],
-                access_token_secret=p['ftv']['access_secret'])
   try:
-    print settings.get('twitter_consumer_secret')
-    print p['ftv']['access_secret']
-    api = twitter.Api(consumer_key=settings.get('twitter_consumer_key'),
+    api = python_twitter.Api(consumer_key=settings.get('twitter_consumer_key'),
                 consumer_secret=settings.get('twitter_consumer_secret'),
                 access_token_key=p['ftv']['access_key'],
                 access_token_secret=p['ftv']['access_secret'])
