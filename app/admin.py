@@ -5,7 +5,7 @@ import requests, datetime
 from sunlight import congress
 from geopy import geocoders
 
-from db import politiciandb, tweetdb
+from db import politiciandb, tweetdb, userdb
 
 ###########################
 ### List the available admin tools
@@ -168,6 +168,17 @@ class Tweet(app.basic.BaseHandler):
         }
       tweetdb.save(save_tweet)
 
+      # Email admins
+      subject = '%s tweeted!' % self.current_user
+      text_body = tweet_template
+      for sn in settings.get('staff'):
+        admin = userdb.get_user_by_screen_name(sn)
+        try:
+          self.send_email(admin['email_address'], subject, text_body)
+        except:
+          print 'Failed to send email to admin %s' % admin['user']['username']
+          pass
+
       return self.render('admin/admin_home.html', msg='All accounts tweeted successfully!') 
 
 
@@ -195,7 +206,6 @@ class Tweet(app.basic.BaseHandler):
 class Database(app.basic.BaseHandler):
   @tornado.web.authenticated
   def get(self):
-    self.send_email('alexander@usv.com', 'test postmark', 'success!')
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
     else:
