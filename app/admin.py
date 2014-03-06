@@ -22,10 +22,6 @@ class AdminHome(app.basic.BaseHandler):
     if len(tweets) > 10:
       tweets = tweets[0:9]
     
-
-
-
-
     self.render('admin/admin_home.html', tweets=tweets)
 
 
