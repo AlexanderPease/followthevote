@@ -33,9 +33,6 @@ class Votes(app.basic.BaseHandler):
     form = self.get_votes_form()
     msg = 'What shall we tweet about? Search the Congressional Archives'
 
-    print self.get_argument('chamber','fail_chamber')
-    print self.get_argument('test','fail_test')
-
     return self.render('admin/votes.html', form=form, msg=msg, votes=[])
 
   @tornado.web.authenticated
@@ -44,9 +41,6 @@ class Votes(app.basic.BaseHandler):
       self.redirect('/')
 
     form = self.get_votes_form()
-    print form
-    print self.request.arguments
-    print self.get_argument('test','test_fail')
 
     # Sunlight API pukes on null args, so sanitize
     kwargs = {'per_page': 50}
@@ -55,7 +49,6 @@ class Votes(app.basic.BaseHandler):
         kwargs[k] = v
 
     # Query Sunlight API
-    print kwargs
     votes = congress.votes(**kwargs)
 
     # Post-query logic
@@ -76,9 +69,7 @@ class Votes(app.basic.BaseHandler):
       #form['roll_id'] = self.get_argument('roll_id', '')
       #form['number'] = self.get_argument('number', '')
       #form['year'] = self.get_argument('year', '')
-      form['chamber'] = self.get_argument('chamber', '') # NOT WORKING
-      print self.get_argument('chamber','fail_chamber')
-      print self.get_argument('test','fail_test')
+      form['chamber'] = self.get_argument('chamber', '')
       return form
 
 ###########################
