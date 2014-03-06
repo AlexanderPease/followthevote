@@ -27,7 +27,10 @@
     <h4>Suggested info</h4>
     Question: <a href="{{ vote['url'] }}" target="_blank">{{ vote['question'] }}</a></br>
     Roll ID: {{ vote['roll_id'] }}</br>
-    Bill ID: {{ vote['bill_id'] }}</br>
+
+    {% if 'bill_id' in vote.keys() %}
+      Bill ID: {{ vote['bill_id'] }}</br>
+    {% end %}
     Chamber: {{ vote['chamber'].capitalize() }}</br>
     Voted at: {{ vote['voted_at'] }}</br>
     Result: {{ vote['result'] }}</br>
