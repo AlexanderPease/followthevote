@@ -14,10 +14,10 @@
 
 	<ul>
 	  <li>
-	    <a href="/admin/votes">Votes</a>
+	    <a href="/admin/votes">Search Votes</a>
 	  </li>
 	  <li>
-	    <a href="/admin/database">Database</a>
+	    <a href="/admin/database">FTV Accounts Database</a>
 	  </li>
 	</ul>
 
@@ -27,6 +27,7 @@
 		@{{ t['admin'] }} for {{ len(t['tweeted']) }} FTV accounts ({{ t['datetime'].date() }}):
 		</br>
 		"{{ t['tweet_template'] }}"
+		</br></br>
 	{% end %}
 
 {% end %}
