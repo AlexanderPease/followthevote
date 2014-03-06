@@ -21,6 +21,11 @@
 	  </li>
 	</ul>
 
-	{{ tweets }}
+	<h4>Recent Tweets</h4>
+
+	{% for t in tweets %}
+		{{ t['admin'] }} ({{ t['datetime'] }}): </br>
+		{{ t['tweet_template'] }}
+	{% end %}
 
 {% end %}

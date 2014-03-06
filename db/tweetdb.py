@@ -13,6 +13,7 @@ import pymongo, logging
     "datetime": {
         "$date": "2014-03-05T12:23:31.828Z"
     },
+    "admin": "AlexanderMPease",
     "individual_votes": {
         "M000485": "Yea",
         "L000580": "Nay",
