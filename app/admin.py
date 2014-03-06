@@ -16,8 +16,17 @@ class AdminHome(app.basic.BaseHandler):
   def get(self):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
-    else:
-      self.render('admin/admin_home.html')
+    
+    # Show recent tweets
+    tweets = tweetdb.find_all()
+    if len(tweets) > 10:
+      tweets = tweets[0:9]
+    
+
+
+
+
+    self.render('admin/admin_home.html', tweets=tweets)
 
 
 ###########################

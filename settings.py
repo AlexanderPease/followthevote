@@ -80,6 +80,7 @@ default_options = {
 
   'staff':[
     "AlexanderMPease",
+    "amiravalliani"
   ],
 
   # define the various roles and what capabilities they support

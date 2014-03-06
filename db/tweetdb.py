@@ -65,17 +65,13 @@ import pymongo, logging
 ### Database methods
 ###########################
 
-''' Returns all politicians, unless filtered '''
+''' Returns all tweets, unless filtered '''
 def find_all(spec=None, fields=None):
-	return list(db.politician.find(spec=spec, fields=fields, sort=[('ftv', pymongo.DESCENDING)]))
+	return list(db.tweet.find(spec=spec, fields=fields, sort=[('datetime', pymongo.DESCENDING)]))
 
 ''' kwarg must be a dict '''
 def find_one(kwarg):
     return db.tweet.find_one(kwarg)
-
-''' Returns politician of given bioguide_id '''
-def find_by_id(t_id):
-    return db.tweet.find_one({'_id':t_id})
 
 ''' Saves a tweet to the database.
     Must match entire vote dict to update vs. upsert '''

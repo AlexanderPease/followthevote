@@ -3,7 +3,6 @@
 {% block body %}
 	
 	<h4>Administrative Dashboard</h4>
-	<p>Logged in as {{ current_user }}</p>
 
     {% if msg %}
       <p class="text-success">{{ msg }}</p>
@@ -21,5 +20,7 @@
 	    <a href="/admin/database">Database</a>
 	  </li>
 	</ul>
+
+	{{ tweets }}
 
 {% end %}
