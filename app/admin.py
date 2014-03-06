@@ -165,6 +165,7 @@ class Tweet(app.basic.BaseHandler):
         'placeholders': {'reps_account_placeholder': REPS_ACCOUNT_PLACEHOLDER, 'choice_placeholder': CHOICE_PLACEHOLDER},
         'tweet': tweet, # A sample tweet (always from last rep in database to tweet)
         'individual_votes': individual_votes,
+        'admin': self.current_user
         }
       tweetdb.save(save_tweet)
 
