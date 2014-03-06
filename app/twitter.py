@@ -13,7 +13,7 @@ class Auth(app.basic.BaseHandler):
     consumer_key = settings.get('twitter_consumer_key')
     consumer_secret = settings.get('twitter_consumer_secret')
     callback_host = 'http://%s/twitter' % self.request.headers['host']
-    print callback_host
+    #print callback_host
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_host, secure=True)
     auth_url = auth.get_authorization_url(True)
     self.set_secure_cookie("request_token_key", auth.request_token.key)
@@ -43,8 +43,6 @@ class Twitter(app.basic.BaseHandler):
     }
 
     # Do not log in and write to database if not a staff member
-    print screen_name
-    print settings.get('staff')
     if screen_name not in settings.get('staff'):
       self.redirect(bounce_to)
     
@@ -56,6 +54,7 @@ class Twitter(app.basic.BaseHandler):
       # set the cookies based on account details
       self.set_secure_cookie("user_id_str", user['user']['id_str'])
       self.set_secure_cookie("username", user['user']['screen_name'])
+      bounce_to = '/admin'
       # OLD from usv app
       #if 'email_address' not in user or ('email_address' in user and user['email_address'] == ''):
         #bounce_to = '/user/%s/settings?1' % screen_name
