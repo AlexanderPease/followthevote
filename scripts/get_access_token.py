@@ -23,16 +23,19 @@ except:
 import webbrowser
 import oauth2 as oauth
 
-import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "twittercongress.settings")
-from congress_app.models import Twitter_FTV, Politician
+# For local usage
+import sys, os
+try: 
+    sys.path.insert(0, '/Users/AlexanderPease/git/ftv/followthevote')
+    import settings
+except:
+    pass
+
 
 REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token'
 ACCESS_TOKEN_URL = 'https://api.twitter.com/oauth/access_token'
 AUTHORIZATION_URL = 'https://api.twitter.com/oauth/authorize'
 SIGNIN_URL = 'https://api.twitter.com/oauth/authenticate'
-CONSUMER_KEY = 'hNxtR1bjU2QnJqQZYftUzA'
-CONSUMER_SECRET = 'nXVHf7tiGzVvfrGA3VRSbdvjIIt1H706tjiP9rK2o4'
 
 ''' Gets access key and token for the Twitter user currently logged into default browser '''
 def get_access_token(consumer_key, consumer_secret):
@@ -82,7 +85,11 @@ def get_access_token(consumer_key, consumer_secret):
             print 'Access Token secret: %s' % access_token['oauth_token_secret']
             print ''
             return access_token['oauth_token'], access_token['oauth_token_secret']
+def main():
+    # OAuth
+    access_key, access_secret = get_access_token(settings.get('twitter_consumer_key'), settings.get('twitter_consumer_secret'))
 
+''' DJANGO 
 def main():
     # Check to see if Twitter_FTV model exists, or else create
     handle = raw_input('Twitter_FTV handle: ')
@@ -122,7 +129,7 @@ def main():
     # OAuth
     print 'Connecting to Twitter...'
     if not twitter_ftv.access_key or not twitter_ftv.access_secret:
-        access_key, access_secret = get_access_token(CONSUMER_KEY, CONSUMER_SECRET)
+        access_key, access_secret = get_access_token(settings.get('twitter_consumer_key'), settings.get('twitter_consumer_secret'))
         twitter_ftv.access_key = access_key
         twitter_ftv.access_secret = access_secret
         twitter_ftv.save()
@@ -137,6 +144,7 @@ def main():
         twitter_ftv.save()
 
     print 'Model complete!'
+'''
 
 
 if __name__ == "__main__":
