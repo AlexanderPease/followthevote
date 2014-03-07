@@ -9,6 +9,12 @@ except:
 from db import politiciandb
 import twitter as python_twitter
 
+def update_all_ftv():
+	# Make sure that every FTV account is following every other FTV account
+	for p in politiciandb.find_all_with_ftv():
+		for p2 in politiciandb.find_all_with_ftv():
+			politiciandb.add_friend(p, p2)
+
 
 ''' Makes sure @FollowTheVote is following all FTV accounts '''
 def update_ftv_twitter():
@@ -26,6 +32,7 @@ def update_ftv_twitter():
 	print api
 
 def main():
-    update_ftv_twitter()
+    update_all_ftv()
+    #update_ftv_twitter()
 
 if  __name__ =='__main__':main()

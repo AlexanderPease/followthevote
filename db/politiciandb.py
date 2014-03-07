@@ -42,6 +42,10 @@ import twitter as python_twitter # bear/python-twitter
 def find_all(spec=None, fields=None):
 	return list(db.politician.find(spec=spec, fields=fields, sort=[('ftv', pymongo.DESCENDING)]))
 
+''' Returns all politicians, unless filtered '''
+def find_all_with_ftv():
+  return list(db.politician.find({'ftv': {'$exists': True}}))
+
 ''' kwarg must be a dict. Ex: {'twitter_id': 'SenSchumer'}'''
 def find_one(kwarg):
     return db.politician.find_one(kwarg)
@@ -98,11 +102,24 @@ def login_twitter(p):
   except:
     if 'ftv' in p.keys():
       print "@%s's account %s failed to authenticate with API" % (p['brief_name'], p['ftv']['twitter'])
-      print p
       raise Exception
     else: 
       #print '@%s does not have an FTV account' % p['brief_name']
       return None
+
+''' If p has FTV account, friend another twitter account '''
+def add_friend(p, new_friend):
+  if 'ftv' not in p.keys():
+    return False
+  api = login_twitter(p)
+  user = api.CreateFriendship(new_friend)
+  try:
+    print api
+    user = api.CreateFriendship(new_friend)
+    print api.GetFriends()
+  except:
+    raise Exception
+
 
 ''' Politician's own twitter handle '''
 def twitter(p):
