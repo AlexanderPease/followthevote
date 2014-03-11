@@ -10,10 +10,22 @@ from db import politiciandb
 import twitter as python_twitter
 
 def update_all_ftv():
-	# Make sure that every FTV account is following every other FTV account
+	# Get all twitter ids and save to database
+	for p in politiciandb.find_all_with_ftv():
+		print p
+		api = politiciandb.login_twitter(p)
+		user = api.VerifyCredentials()
+		p['ftv']['id'] = user.id
+		politiciandb.save(p)
+
+	# Make every FTV account follow every other FTV account
 	for p in politiciandb.find_all_with_ftv():
 		for p2 in politiciandb.find_all_with_ftv():
 			politiciandb.add_friend(p, p2)
+
+	# Make @FollowTheVote follows all FTV accounts
+	# TODO
+
 
 
 ''' Makes sure @FollowTheVote is following all FTV accounts '''

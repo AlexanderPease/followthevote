@@ -4,6 +4,8 @@ import settings
 from mongo import db
 import pymongo, logging
 import twitter as python_twitter # bear/python-twitter
+import tweepy
+
 
 """
 {
@@ -111,14 +113,26 @@ def login_twitter(p):
 def add_friend(p, new_friend):
   if 'ftv' not in p.keys():
     return False
+
+  # If new_friend is a dict, not a string
+  if type(new_friend) is dict:
+    try:
+      new_friend = new_friend['ftv']['twitter']
+    except:
+      raise Exception
+
+  # Make sure not adding self
+  if new_friend == p['ftv']['twitter']:
+    return
+
+  # Create friendship
+  print '%s adding %s' % (p['ftv']['twitter'], new_friend)
   api = login_twitter(p)
-  user = api.CreateFriendship(new_friend)
-  try:
-    print api
-    user = api.CreateFriendship(new_friend)
-    print api.GetFriends()
-  except:
-    raise Exception
+  print api
+  user = api.CreateFriendship(screen_name=new_friend) # user is python_twitter.user instance
+  print '%s now following %s' % (p['ftv']['twitter'], new_friend)
+
+
 
 
 ''' Politician's own twitter handle '''
