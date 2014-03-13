@@ -126,9 +126,7 @@ def add_friend(p, new_friend):
     return
 
   # Create friendship
-  print '%s adding %s' % (p['ftv']['twitter'], new_friend)
   api = login_twitter(p)
-  print api
   user = api.CreateFriendship(screen_name=new_friend) # user is python_twitter.user instance
   print '%s now following %s' % (p['ftv']['twitter'], new_friend)
 

@@ -10,7 +10,6 @@ from db import politiciandb
 import twitter as python_twitter
 
 def update_all_ftv():
-	
 	for p in politiciandb.find_all_with_ftv():
 		print "Updating %s..." % p['name']
 		api = politiciandb.login_twitter(p)
@@ -20,48 +19,72 @@ def update_all_ftv():
 		p['ftv']['id'] = user.id
 		politiciandb.save(p)
 
-		# Set name, description, image, etc.
+		# Set description, name, location, and url...
 		if 'twitter' in p.keys():
-			p['ftv']['description'] = '' % p['ftv']['twitter'] # 160 char max
+			p['ftv']['description'] = 'Tweeting the Congressional votes of %s' % p['twitter'] # 160 char max
+			if len(p['ftv']['description']) > 160:
+				print len(p['ftv']['name'])
+				raise Exception
+		else:
+			p['ftv']['description'] = 'Tweeting the Congressional votes of %s' % p['brief_name'] # 160 char max
+			if len(p['ftv']['description']) > 160:
+				print len(p['ftv']['name'])
+				raise Exception
 		
-		p['ftv']['name'] = 'FTV for %s' % p['ftv']['brief_name'] # 20 char max
+		p['ftv']['name'] = 'FTV for %s' % p['brief_name'] # 20 char max
 		if len(p['ftv']['name']) > 20:
-			print len(p['ftv']['name'])
-			raise Exception
+			p['ftv']['name'] = p['ftv']['name'].replace('.', '')
+			if len(p['ftv']['name']) > 20:
+				p['ftv']['name'] = "FTV @%s" % p['twitter_id']
+				if len(p['ftv']['name']) > 20:
+					print p['ftv']['name']
+					print len(p['ftv']['name'])
+					raise Exception
 
+		# ...and write
+		api.UpdateProfile(name=p['ftv']['name'], 
+						location='Washington, D.C.', 
+						description=p['ftv']['description'],
+						profileURL='http://followthevote.org')
+		politiciandb.save(p)
 
-		#api. ('Washington, D.C.')
-		#api. ('http://followthevote.org')
+		# Set profile image and background image
+		# TODO
+
+		# Potentially change screen_name, if needed
+
 
 		# Make every FTV account follow every other FTV account
 		for p2 in politiciandb.find_all_with_ftv():
 			if not p == p2:
 				politiciandb.add_friend(p, p2)
-
-	# Make @FollowTheVote follows all FTV accounts
-	# TODO
-
-	
+		
 
 
-
-''' Makes sure @FollowTheVote is following all FTV accounts '''
+''' Update @FollowTheVote '''
 def update_ftv_twitter():
-	print settings.get('twitter_consumer_key')
-	print settings.get('twitter_consumer_secret')
-	print settings.get('ftv_twitter_consumer_key')
-	print settings.get('ftv_twitter_consumer_secret')
-
 	api = python_twitter.Api(consumer_key=settings.get('twitter_consumer_key'),
                 consumer_secret=settings.get('twitter_consumer_secret'),
-                #access_token_key="2242697833-DiyEb0L6YvGo2zCApo1NSgay9Ul5DpZNOAOPyLR",
-                #access_token_secret="JXtFJTvsI1KgyDggamOxUd54AHoBABoatO1x5lYytZTnH")
                 access_token_key=settings.get('ftv_twitter_consumer_key'),
-                access_token_secret=settings.get('ftv_twitter_access_secret'))
-	print api
+                access_token_secret=settings.get('ftv_twitter_consumer_secret'))
+	
+	# Make @FollowTheVote follow all FTV and politician accounts
+	for p in politiciandb.find_all():
+		if 'twitter_id' in p.keys():
+			if not api.LookupFriendship(screen_name=p['twitter_id']):
+				try:
+					api.CreateFriendship(screen_name=p['twitter_id'])
+				except:
+					print "Failed to add politician's twitter: %s" % p['twitter_id']
+		if 'ftv' in p.keys():
+			if not api.LookupFriendship(screen_name=p['twitter_id']):
+				try:
+					api.CreateFriendship(screen_name=p['ftv']['twitter'])
+				except:
+					print "Failed to add FTV twitter: %s " % p['ftv']['twitter']
 
 def main():
-    update_all_ftv()
-    #update_ftv_twitter()
+    #update_all_ftv()
+    update_ftv_twitter()
 
 if  __name__ =='__main__':main()
