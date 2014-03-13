@@ -10,21 +10,38 @@ from db import politiciandb
 import twitter as python_twitter
 
 def update_all_ftv():
-	# Get all twitter ids and save to database
+	
 	for p in politiciandb.find_all_with_ftv():
-		print p
+		print "Updating %s..." % p['name']
 		api = politiciandb.login_twitter(p)
+		
+		# Get all twitter ids and save to database
 		user = api.VerifyCredentials()
 		p['ftv']['id'] = user.id
 		politiciandb.save(p)
 
-	# Make every FTV account follow every other FTV account
-	for p in politiciandb.find_all_with_ftv():
+		# Set name, description, image, etc.
+		if 'twitter' in p.keys():
+			p['ftv']['description'] = '' % p['ftv']['twitter'] # 160 char max
+		
+		p['ftv']['name'] = 'FTV for %s' % p['ftv']['brief_name'] # 20 char max
+		if len(p['ftv']['name']) > 20:
+			print len(p['ftv']['name'])
+			raise Exception
+
+
+		#api. ('Washington, D.C.')
+		#api. ('http://followthevote.org')
+
+		# Make every FTV account follow every other FTV account
 		for p2 in politiciandb.find_all_with_ftv():
-			politiciandb.add_friend(p, p2)
+			if not p == p2:
+				politiciandb.add_friend(p, p2)
 
 	# Make @FollowTheVote follows all FTV accounts
 	# TODO
+
+	
 
 
 
