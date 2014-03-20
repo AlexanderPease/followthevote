@@ -21,12 +21,16 @@ class AdminHome(app.basic.BaseHandler):
     if msg == 'tweet_success':
       msg = 'All accounts successfully tweeted!'
 
+    err = self.get_argument('err', '')
+    if err == 'tweet_exists':
+      err = 'This vote has already been tweeted en masse!'
+
     # Show recent tweets
     tweets = tweetdb.find_all()
     if len(tweets) > 10:
       tweets = tweets[0:9]
     
-    self.render('admin/admin_home.html', tweets=tweets, msg=msg)
+    self.render('admin/admin_home.html', tweets=tweets, msg=msg, err=err)
 
 
 ###########################
@@ -108,6 +112,13 @@ class Tweet(app.basic.BaseHandler):
     tweet_beginning = self.get_tweet_beginning()
     tweet_text = self.get_argument('tweet_text','')
     tweet_template = tweet_beginning + tweet_text
+
+
+    # Check if rePOSTing. I did this once and it doesn't break anything
+    # but fails when trying to tweet, so sets tweet document to 0 accounts tweeted
+    existing_tweet = tweetdb.find_one({'vote':vote})
+    if existing_tweet:
+      return self.redirect('admin/?err=tweet_exists') 
 
     if len(tweet_text) > 110: # poorly hardcoded. calculated from get_tweet_beginning()
       err = 'Some tweets will exceed 140 characters in length!'

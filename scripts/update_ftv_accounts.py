@@ -68,7 +68,7 @@ def update_ftv_twitter():
                 access_token_key=settings.get('ftv_twitter_consumer_key'),
                 access_token_secret=settings.get('ftv_twitter_consumer_secret'))
 	
-	# Make @FollowTheVote follow all FTV and politician accounts
+	# Make @FollowTheVote followsubl . all FTV and politician accounts
 	for p in politiciandb.find_all():
 		if 'twitter_id' in p.keys():
 			if not api.LookupFriendship(screen_name=p['twitter_id']):
