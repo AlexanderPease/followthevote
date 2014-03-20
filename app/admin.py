@@ -17,12 +17,16 @@ class AdminHome(app.basic.BaseHandler):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
     
+    msg = self.get_argument('msg', '')
+    if msg == 'tweet_success':
+      msg = 'All accounts successfully tweeted!'
+
     # Show recent tweets
     tweets = tweetdb.find_all()
     if len(tweets) > 10:
       tweets = tweets[0:9]
     
-    self.render('admin/admin_home.html', tweets=tweets)
+    self.render('admin/admin_home.html', tweets=tweets, msg=msg)
 
 
 ###########################
@@ -176,7 +180,7 @@ class Tweet(app.basic.BaseHandler):
           print 'Failed to send email to admin %s' % admin['user']['username']
           pass
 
-      return self.render('admin/admin_home.html', msg='All accounts tweeted successfully!') 
+      return self.redirect('admin/?msg=tweet_success') 
 
 
   ''' Vote is defined as all arguments except tweet_text '''
