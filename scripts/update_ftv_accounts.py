@@ -15,10 +15,10 @@ def update_all_ftv2():
 		print "Updating %s..." % p['name']
 		api = politiciandb.login_tweepy(p)
 
-		profile_img_path = settings.get('project_root') + '/static/img/bald_eagle.jpg'
+		profile_img_path = settings.get('project_root') + '/static/img/congress.jpeg'
 		api.update_profile_image(profile_img_path)
 		background_img_path = settings.get('project_root') + '/static/img/congress.jpeg'
-		api.update_profile_background_image(background_img_path)
+		api.update_profile_background_image(background_img_path, tile='true')
 
 def update_all_ftv():
 	for p in politiciandb.find_all_with_ftv():
