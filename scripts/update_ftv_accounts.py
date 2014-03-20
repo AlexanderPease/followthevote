@@ -9,6 +9,17 @@ except:
 from db import politiciandb
 import twitter as python_twitter
 
+# Using tweepy
+def update_all_ftv2():
+	for p in politiciandb.find_all_with_ftv():
+		print "Updating %s..." % p['name']
+		api = politiciandb.login_tweepy(p)
+
+		profile_img_path = settings.get('project_root') + '/static/img/bald_eagle.jpg'
+		api.update_profile_image(profile_img_path)
+		background_img_path = settings.get('project_root') + '/static/img/congress.jpeg'
+		api.update_profile_background_image(background_img_path)
+
 def update_all_ftv():
 	for p in politiciandb.find_all_with_ftv():
 		print "Updating %s..." % p['name']
@@ -85,6 +96,7 @@ def update_ftv_twitter():
 
 def main():
     #update_all_ftv()
-    update_ftv_twitter()
+    update_all_ftv2()
+    #update_ftv_twitter()
 
 if  __name__ =='__main__':main()

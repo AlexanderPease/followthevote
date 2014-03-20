@@ -80,6 +80,23 @@ def remove(intro):
 ###########################
 ### Individual property methods
 ###########################
+
+def login_tweepy(p):
+  try:
+    auth = tweepy.OAuthHandler(settings.get('twitter_consumer_key'), settings.get('twitter_consumer_secret'))
+    auth.set_access_token(p['ftv']['access_key'], p['ftv']['access_secret'])
+    return tweepy.API(auth)
+  except:
+    if 'ftv' in p.keys():
+      print "@%s's account %s failed to authenticate with API" % (p['brief_name'], p['ftv']['twitter'])
+      raise Exception
+    else: 
+      #print '@%s does not have an FTV account' % p['brief_name']
+      return None
+
+########
+
+
 ''' Actually tweet from their FTV account! 
     Returns True if successfully tweeted, False if failed '''
 def tweet(p, t):
@@ -129,8 +146,6 @@ def add_friend(p, new_friend):
   api = login_twitter(p)
   user = api.CreateFriendship(screen_name=new_friend) # user is python_twitter.user instance
   print '%s now following %s' % (p['ftv']['twitter'], new_friend)
-
-
 
 
 ''' Politician's own twitter handle '''
