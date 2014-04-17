@@ -44,12 +44,13 @@ class Twitter(app.basic.BaseHandler):
 
     # Do not log in and write to database if not a staff member
     if screen_name not in settings.get('staff'):
-      self.redirect(bounce_to)
+      return self.redirect(bounce_to)
     
 
     # If a staff member, go through sign-up/log-in flow
     # Check if we have this user already or not in the system
     user = userdb.get_user_by_screen_name(screen_name)
+    print user
     if user:
       # set the cookies based on account details
       self.set_secure_cookie("user_id_str", user['user']['id_str'])
@@ -84,8 +85,7 @@ class Twitter(app.basic.BaseHandler):
     # let's save the screen_name to a cookie as well so we can use it for restricted bounces if need be
     self.set_secure_cookie('screen_name', screen_name, expires_days=30)
 
-    # bounce to account
-    self.redirect(bounce_to)
+    return self.redirect(bounce_to)
 
 ###########################
 ### LOG USER OUT OF ACCOUNT
