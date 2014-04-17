@@ -84,7 +84,7 @@ default_options = {
   'hot_post_set_count': 200,
 
   'staff':[
-    "AlexanderMPease",
+    "AlexanderPease",
     "amiravalliani"
   ],
 
