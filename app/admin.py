@@ -15,7 +15,7 @@ class AdminHome(app.basic.BaseHandler):
   @tornado.web.authenticated
   def get(self):
     if self.current_user not in settings.get('staff'):
-      self.redirect('/')
+      return self.redirect('/')
     
     msg = self.get_argument('msg', '')
     if msg == 'tweet_success':
@@ -30,7 +30,7 @@ class AdminHome(app.basic.BaseHandler):
     if len(tweets) > 10:
       tweets = tweets[0:9]
     
-    self.render('admin/admin_home.html', tweets=tweets, msg=msg, err=err)
+    return self.render('admin/admin_home.html', tweets=tweets, msg=msg, err=err)
 
 
 ###########################
@@ -51,7 +51,7 @@ class Votes(app.basic.BaseHandler):
   @tornado.web.authenticated
   def post(self):
     if self.current_user not in settings.get('staff'):
-      self.redirect('/')
+      return self.redirect('/')
 
     form = self.get_votes_form()
 
@@ -96,7 +96,7 @@ class Tweet(app.basic.BaseHandler):
   @tornado.web.authenticated
   def get(self):
     if self.current_user not in settings.get('staff'):
-      self.redirect('/')
+      return self.redirect('/')
 
     vote = self.get_vote() # vote is defined as the GET parameters passed into Tweet(), except tweet_text
     tweet_beginning = self.get_tweet_beginning()
@@ -106,7 +106,7 @@ class Tweet(app.basic.BaseHandler):
   @tornado.web.authenticated
   def post(self):
     if self.current_user not in settings.get('staff'):
-      self.redirect('/')
+      return self.redirect('/')
     
     vote = self.get_vote()
     tweet_beginning = self.get_tweet_beginning()
