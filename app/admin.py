@@ -5,7 +5,7 @@ import requests, datetime
 from sunlight import congress
 from geopy import geocoders
 
-from db import politiciandb, tweetdb, userdb
+from db import politiciandb, tweetdb, userdb, politiciandb2
 
 ###########################
 ### List the available admin tools

@@ -18,7 +18,7 @@ def update_all_ftv2():
 		profile_img_path = settings.get('project_root') + '/static/img/congress.jpeg'
 		api.update_profile_image(profile_img_path)
 		background_img_path = settings.get('project_root') + '/static/img/congress.jpeg'
-		api.update_profile_background_image(background_img_path, tile='true')
+		api.update_profile_background_image(background_img_path, tile='true') # Not working
 
 def update_all_ftv():
 	for p in politiciandb.find_all_with_ftv():
