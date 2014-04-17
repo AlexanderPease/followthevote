@@ -93,7 +93,7 @@ def auto_access_token(consumer_key, consumer_secret, auto=True):
     oauth_consumer = oauth.Consumer(key=consumer_key, secret=consumer_secret)
     oauth_client = oauth.Client(oauth_consumer)
 
-    print 'Requesting temp token from Twitter'
+    print 'Requesting temp token from Twitter...'
 
     resp, content = oauth_client.request(REQUEST_TOKEN_URL, 'POST', body="oauth_callback=oob")
 
@@ -103,20 +103,20 @@ def auto_access_token(consumer_key, consumer_secret, auto=True):
         request_token = dict(parse_qsl(content))
         url = '%s?oauth_token=%s' % (AUTHORIZATION_URL, request_token['oauth_token'])
 
-        print ''
-        print 'I will try to start a browser to visit the following Twitter page'
-        print 'if a browser will not start, copy the URL to your browser'
-        print 'and retrieve the pincode to be used'
-        print 'in the next step to obtaining an Authentication Token:'
-        print ''
+        print 'Requesting authorization from user...'
         print url
-        print ''
 
         if auto:
-            browser = splinter.Browser('chrome')
-            browser.visit(url)
-            print browser
-            return
+            with splinter.Browser('chrome') as browser: # browser closes at end
+                browser.visit(url)
+
+                # Log in 
+                browser.fill('session[username_or_email]', 'AlexanderPease')
+                browser.fill('session[password]', 'Chopin1.618')
+                browser.find_by_id('allow').first.click()
+                
+                # After click through, read pin_code
+                pincode = browser.find_by_css('code').first.html
         else:    
             webbrowser.open(url) # Manually open browser
             pincode = raw_input('Pincode? ')
