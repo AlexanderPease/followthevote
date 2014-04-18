@@ -20,10 +20,6 @@ class AdminHome(app.basic.BaseHandler):
     for p in politiciandb2.Politician.objects:
       pass
 
-    import tweepy
-    auth = tweepy.BasicAuthHandler('PevahouseGarcia', 'pwsk54RNJA')
-    print auth
-
     msg = self.get_argument('msg', '')
     if msg == 'tweet_success':
       msg = 'All accounts successfully tweeted!'
