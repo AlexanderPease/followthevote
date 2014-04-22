@@ -7,6 +7,8 @@ except:
 
 import csv
 from db.mongo import db
+from db.politiciandb2 import Politician, FTV
+import tweepy
 
 
 def save(doc):
@@ -27,8 +29,62 @@ def excel_to_mongodb(filename):
             save(doc)
 
 
+''' Adds twitter accounts to politicians without an FTV account '''
+def add_twitter_to_politician():
+	ps = Politician.objects(title='Sen')
+	print len(ps)
+	for p in ps:
+		p.update(**{'$unset': {'district':1}})
+
+	# Politicians w/out FTV
+	ps = Politician.objects(ftv__exists=False)
+	p_counter = 0
+
+	'''
+	for a in db.paid_twitter.find():
+		if 'assigned_to_bioguide_id' not in a.keys():
+			if p_counter < len(ps): # Don't go over array length
+				p = ps[p_counter]
+
+				print p
+				print p.district
+				print type(p.district)
+
+				# Double check p.ftv doesn't exist
+				if p.ftv:
+					raise Exception
+
+				# Assign new twitter account!
+				p.ftv = FTV(twitter = a['twitter'],
+							twitter_id = a['twitter_id'],
+							access_key = a['access_key'],
+							access_secret = a['access_secret'],
+							name = a['name'],
+							email = a['email'],
+							email_password = a['email_password'])
+				p.save()
+				p_counter = p_counter + 1
+				a['assigned_to_bioguide_id'] = p.bioguide_id
+				save(a)
+
+			else:
+				print "No more politicians! We have extra twitter accounts!"
+	'''
+
+def get_twitter_ids():
+	for a in db.paid_twitter.find():
+		auth = tweepy.OAuthHandler(settings.get('twitter_consumer_key'), settings.get('twitter_consumer_secret'))
+		auth.set_access_token(a['access_key'], a['access_secret'])
+		api = tweepy.API(auth)
+		creds = api.verify_credentials() 
+		a['twitter_id'] = creds.id
+		save(a)
+		
+
 def main():
-    excel_to_mongodb('../50 Twitter Accounts_Alexander Pease.csv')
+    #excel_to_mongodb('../50 Twitter Accounts_Alexander Pease.csv')
+    #get_twitter_ids()
+    add_twitter_to_politician()
 
 if __name__ == "__main__":
     main()

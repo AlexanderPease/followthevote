@@ -6,21 +6,21 @@ mongo_database = settings.get('mongo_database')
 connect('politician', host=mongo_database['host'])
 
 class FTV(EmbeddedDocument):
-	twitter = StringField()
-	twitter_id = IntField() # used to be id
-	access_key = StringField()
-	access_secret = StringField()
+	twitter = StringField(required=True)
+	twitter_id = IntField(required=True) 
+	access_key = StringField(required=True)
+	access_secret = StringField(required=True)
 	name = StringField()
 	description = StringField()
 
 	email = StringField()
-	email_password = StringField() # used to be password
+	email_password = StringField() 
 
 class Politician(Document):
 	first_name = StringField(required=True)
 	last_name = StringField(required=True)
 	title = StringField(required=True)
-	district = IntField() # Senators don't have (but they could have Jr/Sr)
+	district = IntField(required=False) # Senators don't have (but they could have Jr/Sr)
 	state = StringField(required=True, max_length=2)
 	party = StringField(required=True, max_length=1)
 	chamber = StringField(required=True)
@@ -29,7 +29,10 @@ class Politician(Document):
 	twitter = StringField(required=True, max_length=16) # Politician's personal twitter
 	bioguide_id = StringField()
 
-	ftv = EmbeddedDocumentField("FTV")
+	ftv = EmbeddedDocumentField("FTV", required=False)
+
+	def __str__(self):
+		return self.name()
 
 	def name(self):
 		return self.title + ". " + self.first_name + " " + self.last_name
