@@ -26,7 +26,7 @@ class Politician(Document):
 	chamber = StringField(required=True)
 
 	portrait_path = StringField(required=True)
-	twitter = StringField(required=True, max_length=16) # Politician's personal twitter
+	twitter = StringField(required=False, max_length=16) # Politician's personal twitter, most have one
 	bioguide_id = StringField()
 
 	ftv = EmbeddedDocumentField("FTV", required=False)

@@ -65,11 +65,11 @@ def save(p):
 
 ''' Return all senators '''
 def senators():
-  return db.politician.find({'title':'Sen'})
+  return list(db.politician.find({'title':'Sen'}))
 
 ''' Return all representatives '''
 def representatives():
-  return db.politician.find({'title':'Rep'})
+  return list(db.politician.find({'title':'Rep'}))
 
 '''
 def remove(intro):

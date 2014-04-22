@@ -8,6 +8,7 @@ except:
 import csv
 from db.mongo import db
 from db.politiciandb2 import Politician, FTV
+from db import politiciandb
 import tweepy
 
 
@@ -29,27 +30,21 @@ def excel_to_mongodb(filename):
             save(doc)
 
 
-''' Adds twitter accounts to politicians without an FTV account '''
+''' Adds twitter accounts to politicians without an FTV account 
+	There's something a bit wrong with the counters here '''
 def add_twitter_to_politician():
-	ps = Politician.objects(title='Sen')
-	print len(ps)
-	for p in ps:
-		p.update(**{'$unset': {'district':1}})
-
 	# Politicians w/out FTV
 	ps = Politician.objects(ftv__exists=False)
 	p_counter = 0
+	print len(ps)
 
-	'''
 	for a in db.paid_twitter.find():
 		if 'assigned_to_bioguide_id' not in a.keys():
 			if p_counter < len(ps): # Don't go over array length
 				p = ps[p_counter]
+				print p_counter
 
-				print p
-				print p.district
-				print type(p.district)
-
+				print p.last_name
 				# Double check p.ftv doesn't exist
 				if p.ftv:
 					raise Exception
@@ -69,20 +64,22 @@ def add_twitter_to_politician():
 
 			else:
 				print "No more politicians! We have extra twitter accounts!"
-	'''
 
 def get_twitter_ids():
 	for a in db.paid_twitter.find():
-		auth = tweepy.OAuthHandler(settings.get('twitter_consumer_key'), settings.get('twitter_consumer_secret'))
-		auth.set_access_token(a['access_key'], a['access_secret'])
-		api = tweepy.API(auth)
-		creds = api.verify_credentials() 
-		a['twitter_id'] = creds.id
-		save(a)
+		if 'twitter_id' not in a.keys():
+			auth = tweepy.OAuthHandler(settings.get('twitter_consumer_key'), settings.get('twitter_consumer_secret'))
+			auth.set_access_token(a['access_key'], a['access_secret'])
+			api = tweepy.API(auth)
+			creds = api.verify_credentials() 
+			a['twitter_id'] = creds.id
+			save(a)
 		
 
 def main():
-    #excel_to_mongodb('../50 Twitter Accounts_Alexander Pease.csv')
+    #excel_to_mongodb('../paid_accounts/500 Twitter Accounts_Alexander Pease.csv')
+
+    # Get access tokens before adding to politicians
     #get_twitter_ids()
     add_twitter_to_politician()
 

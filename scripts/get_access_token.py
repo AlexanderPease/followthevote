@@ -92,10 +92,11 @@ def get_access_token(consumer_key, consumer_secret, twitter=None, twitter_passwo
             return access_token['oauth_token'], access_token['oauth_token_secret']
 
 def main():
-    #access_key, access_secret = get_access_token(settings.get('twitter_consumer_key'), settings.get('twitter_consumer_secret'), 
-    '''
+    #access_key, access_secret = get_access_token(settings.get('twitter_consumer_key'), settings.get('twitter_consumer_secret')
+    
     # OAuth all paid_twitter accounts 
     for a in list(db.paid_twitter.find()):
+        # Only those without access keys
         if 'access_key' not in a.keys():
             access_key, access_secret = get_access_token(settings.get('twitter_consumer_key'), 
                 settings.get('twitter_consumer_secret'), 
@@ -104,7 +105,7 @@ def main():
             a['access_key'] = access_key
             a['access_secret'] = access_secret
             db.paid_twitter.update({'twitter':a['twitter']}, a, upsert=True)
-    '''
+
 
 
 if __name__ == "__main__":
