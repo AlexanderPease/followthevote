@@ -6,12 +6,12 @@ mongo_database = settings.get('mongo_database')
 connect('politician', host=mongo_database['host'])
 
 class FTV(EmbeddedDocument):
-	twitter = StringField(required=True)
-	twitter_id = IntField(required=True) 
+	twitter = StringField(required=True, unique=True)
+	twitter_id = IntField(required=True, unique=True) 
 	access_key = StringField(required=True)
 	access_secret = StringField(required=True)
-	name = StringField()
-	description = StringField()
+	name = StringField(max_length=20)
+	description = StringField(max_length=160)
 
 	email = StringField()
 	email_password = StringField() 
@@ -27,7 +27,7 @@ class Politician(Document):
 
 	portrait_path = StringField(required=True)
 	twitter = StringField(required=False, max_length=16) # Politician's personal twitter, most have one
-	bioguide_id = StringField()
+	bioguide_id = StringField(required=True, unique=True)
 
 	ftv = EmbeddedDocumentField("FTV", required=False)
 
@@ -56,11 +56,12 @@ class Politician(Document):
 
 	''' Actually tweet from their FTV account! 
 	    Returns True if successfully tweeted, False if failed '''
-	def tweet(self, t):
-	  api = self.login_twitter()
+	def tweet(self, t, api=None):
+	  if not api:
+	  	api = self.login_twitter()
 	  if api:
 	    try:
-	      status = api.PostUpdate(t)
+	      status = api.update_status(t)
 	      print '@%s posted status: %s' % (self.ftv.twitter, t)
 	      return True
 	    except:
@@ -68,65 +69,6 @@ class Politician(Document):
 	      print '@%s FAILED to post status: %s' % (self.ftv.twitter, t)
 	      return False
 
-
-
-''' If p has FTV account, friend another twitter account '''
-'''
-def add_friend(p, new_friend):
-  if 'ftv' not in p.keys():
-    return False
-
-  # If new_friend is a dict, not a string
-  if type(new_friend) is dict:
-    try:
-      new_friend = new_friend['ftv']['twitter']
-    except:
-      raise Exception
-
-  # Make sure not adding self
-  if new_friend == p['ftv']['twitter']:
-    return
-
-  # Create friendship
-  api = login_twitter(p)
-  user = api.CreateFriendship(screen_name=new_friend) # user is python_twitter.user instance
-  print '%s now following %s' % (p['ftv']['twitter'], new_friend)
-'''
-
-
-'''SCRAP
-
-
-    for p in politiciandb.find_all():
-      p['twitter'] = p['twitter_id']
-      p['twitter_id'] = ""
-      #if 'ftv' in p.keys():
-        #p['ftv']['email_password'] = p['ftv']['password']
-        #p['ftv']['twitter_password'] = p['ftv']['password']
-        #p['ftv']['twitter_id'] = p['ftv']['id']
-      politiciandb.save(p)
-
-    
-    for p in politiciandb.find_all():
-      p2 = politiciandb2.Politician(first_name = p['first_name'],
-                              last_name = p['last_name'],
-                              district = p['district'],
-                              title = p['title'],
-                              portrait_path = p['portrait_path'],
-                              twitter = p['twitter_id'],
-                              bioguide_id = p['bioguide_id'],
-                              state = p['state'],
-                              chamber='chamber',
-                              party = p['party'],
-                              full_state_name = p['full_state_name'])
-      if 'ftv' in p.keys():
-        politiciandb2.FTV()
-        p2.ftv = p['ftv']
-
-      p2.save()
-      print p2
-'''
-
-
+	
 
 

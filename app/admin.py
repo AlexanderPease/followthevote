@@ -5,7 +5,8 @@ import requests, datetime
 from sunlight import congress
 from geopy import geocoders
 
-from db import politiciandb, tweetdb, userdb, politiciandb2
+from db import tweetdb, userdb 
+from db.politiciandb2 import FTV, Politician
 
 ###########################
 ### List the available admin tools
@@ -16,9 +17,6 @@ class AdminHome(app.basic.BaseHandler):
   def get(self):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
-
-    for p in politiciandb2.Politician.objects:
-      pass
 
     msg = self.get_argument('msg', '')
     if msg == 'tweet_success':
@@ -139,23 +137,23 @@ class Tweet(app.basic.BaseHandler):
 
       # Tweet for every applicable politician. Yes, this is suboptimal
       tweeted = {}
-      for p in politiciandb.find_all():
-        ### IN FUTURE JUST USE THEIR OWN HANDLE. JUST DON"T WANT EXPOSURE YET
+      for p in Politician.objects():
+        ### IN FUTURE JUST USE THEIR OWN HANDLE. JUST DON'T WANT EXPOSURE YET
         # Hierarchy of name choosing
-        if len(p['brief_name']) <= 16:
-            name = p['brief_name']
+        if len(p.brief_name()) <= 16:
+            name = p.brief_name()
         #elif p['twitter']:
         #    name = p['twitter']
-        elif len(p['last_name']) <= 16:
-            name = p['last_name']
-        elif p['title'] == 'sen':
+        elif len(p.last_name) <= 16:
+            name = p.last_name
+        elif p.title == 'Sen':
             name = "Senator"
         else:
             name = "Representative"
 
         # Find corresponding vote
-        if p['bioguide_id'] in individual_votes:
-          choice = individual_votes[p['bioguide_id']]
+        if p.bioguide_id in individual_votes:
+          choice = individual_votes[p.bioguide_id]
           if choice == 'Yea':
               choice = 'YES'
           elif choice == 'Nay':
@@ -165,10 +163,10 @@ class Tweet(app.basic.BaseHandler):
             tweet_template.replace('voted ', '') # get rid of voting verb
 
           tweet = tweet_template.replace(REPS_ACCOUNT_PLACEHOLDER, name).replace(CHOICE_PLACEHOLDER, choice)
-          success = politiciandb.tweet(p, tweet)
+          success = p.tweet(t)
           # If successfull tweeted, save for entry to database
           if success:
-            tweeted[p['bioguide_id']] = choice
+            tweeted[p.bioguide_id] = choice
       
       # Save to database
       save_tweet = {
@@ -224,6 +222,7 @@ class Database(app.basic.BaseHandler):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
     else:
-      politicians = politiciandb.find_all()
+      Politician.update_all()
+      politicians = Politician.objects()
       return self.render('admin/database.html', politicians=politicians)
 

@@ -1,5 +1,5 @@
 import app.basic
-from db import politiciandb
+from db.politiciandb2 import Politician
 from sunlight import congress 
 from geopy import geocoders
 import re
@@ -53,9 +53,10 @@ class Index(app.basic.BaseHandler):
             district = districts[0]
         
     # Get representatives and pass to results.html
-    representative = politiciandb.find_one({'title': 'Rep', 'state': district['state'], 'district': district['district']})
-    senators = politiciandb.find_all({'title': 'Sen', 'state': district['state']})
-    print senators
+    representative = Politician.objects(title='Rep', state=district['state'], district=district['district'])
+    #representative = politiciandb.find_one({'title': 'Rep', 'state': district['state'], 'district': district['district']})
+    senators = Politician.objects(title='Sen', state=district['state'])
+    #senators = politiciandb.find_all({'title': 'Sen', 'state': district['state']})
     if len(senators) != 2:
         raise Exception
     return self.render('public/results.html', results=[representative, senators[0], senators[1]], ordinal=ui_methods.ordinal)

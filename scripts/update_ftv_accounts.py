@@ -6,9 +6,64 @@ try:
 except:
     pass
 
-from db import politiciandb
-import twitter as python_twitter
+from db.politiciandb2 import Politician
 
+''' Updates all FTV Twitter accounts name, description, image, friends, etc. 
+		Make sure you want to update everything in this method before executing! '''
+	def update_all(self):
+		for p in Politician.objects():
+			print "Updating %s..." % p.name()
+			api = p.login_twitter()
+			
+			# Determine description, name, location, and url...
+			if p.twitter:
+				p.ftv.description = 'Tweeting the Congressional votes of @%s' % p.twitter # 160 char max
+			else:
+				p.ftv.description = 'Tweeting the Congressional votes of %s' % p.brief_name()
+			
+			p.ftv.name = 'FTV for %s' % p.brief_name() # 20 char max
+			if len(p.ftv.name) > 20:
+				p.ftv.name = p.ftv.name.replace('.', '')
+				if len(p.ftv.name) > 20:
+					p.ftv.name = "FTV @%s" % p.twitter
+					if len(p.ftv.name) > 20:
+						print p['ftv']['name']
+						print len(p['ftv']['name'])
+						raise Exception
+
+			# ...and write
+			api.update_profile(name=p.ftv.name, 
+							location='Washington, D.C.', 
+							description=p.ftv.description,
+							url='http://followthevote.org')
+			profile_img_path = settings.get('project_root') + '/static/img/congress.jpeg'
+			api.update_profile_image(profile_img_path)
+			background_img_path = settings.get('project_root') + '/static/img/congress.jpeg'
+			api.update_profile_background_image(background_img_path, tile='true') # Not working
+			p.save()
+
+
+			# Make every FTV account follow every other FTV account
+			fail_list = []
+			for p2 in Politician.objects(__raw__={'ftv':{'$exists':True}}):
+				if not p.bioguide_id == p2.bioguide_id:
+					print "Following %s..." % p2.ftv.twitter
+					try:
+						api.create_friendship(p2.ftv.twitter_id)
+					except:
+						print p2.ftv.twitter
+						print p2.ftv.twitter_id
+						fail_list.append(p2.ftv.twitter)
+			print fail_list
+
+
+def main():
+    update_all()
+
+if  __name__ =='__main__':main()
+
+
+'''OLD
 # Using tweepy
 def update_all_ftv2():
 	for p in politiciandb.find_all_with_ftv():
@@ -69,17 +124,17 @@ def update_all_ftv():
 		for p2 in politiciandb.find_all_with_ftv():
 			if not p == p2:
 				politiciandb.add_friend(p, p2)
-		
 
 
-''' Update @FollowTheVote '''
+
+# Update @FollowTheVote
 def update_ftv_twitter():
 	api = python_twitter.Api(consumer_key=settings.get('twitter_consumer_key'),
                 consumer_secret=settings.get('twitter_consumer_secret'),
                 access_token_key=settings.get('ftv_twitter_consumer_key'),
                 access_token_secret=settings.get('ftv_twitter_consumer_secret'))
 	
-	# Make @FollowTheVote followsubl . all FTV and politician accounts
+	# Make @FollowTheVote follow all FTV and politician accounts
 	for p in politiciandb.find_all():
 		if 'twitter_id' in p.keys():
 			if not api.LookupFriendship(screen_name=p['twitter_id']):
@@ -93,10 +148,4 @@ def update_ftv_twitter():
 					api.CreateFriendship(screen_name=p['ftv']['twitter'])
 				except:
 					print "Failed to add FTV twitter: %s " % p['ftv']['twitter']
-
-def main():
-    #update_all_ftv()
-    update_all_ftv2()
-    #update_ftv_twitter()
-
-if  __name__ =='__main__':main()
+'''

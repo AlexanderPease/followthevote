@@ -1,4 +1,9 @@
-''' Inits or updates politiciandb with Sunlight database info and other fields'''
+''' 
+
+OLD uses politiciandb (w/out MongoEngine)
+Inits or updates politiciandb with Sunlight database info and other fields
+
+'''
 import sys, os
 try: 
     sys.path.insert(0, '/Users/AlexanderPease/git/ftv/followthevote')
