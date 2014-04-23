@@ -81,7 +81,8 @@ def main():
 
     # Get access tokens before adding to politicians
     #get_twitter_ids()
-    add_twitter_to_politician()
+    #add_twitter_to_politician()
+
 
 if __name__ == "__main__":
     main()

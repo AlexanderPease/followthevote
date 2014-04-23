@@ -222,7 +222,6 @@ class Database(app.basic.BaseHandler):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
     else:
-      Politician.update_all()
       politicians = Politician.objects()
       return self.render('admin/database.html', politicians=politicians)
 

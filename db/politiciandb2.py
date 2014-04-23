@@ -7,7 +7,8 @@ connect('politician', host=mongo_database['host'])
 
 class FTV(EmbeddedDocument):
 	twitter = StringField(required=True, unique=True)
-	twitter_id = IntField(required=True, unique=True) 
+	twitter_id = IntField(required=True, unique=True)
+	twitter_password = StringField(required=True)
 	access_key = StringField(required=True)
 	access_secret = StringField(required=True)
 	name = StringField(max_length=20)
@@ -22,6 +23,7 @@ class Politician(Document):
 	title = StringField(required=True)
 	district = IntField(required=False) # Senators don't have (but they could have Jr/Sr)
 	state = StringField(required=True, max_length=2)
+	full_state_name = StringField(required=True)
 	party = StringField(required=True, max_length=1)
 	chamber = StringField(required=True)
 
@@ -68,6 +70,9 @@ class Politician(Document):
 	      # raise Exception
 	      print '@%s FAILED to post status: %s' % (self.ftv.twitter, t)
 	      return False
+
+	
+
 
 	
 

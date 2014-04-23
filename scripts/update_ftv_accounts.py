@@ -8,30 +8,35 @@ except:
 
 from db.politiciandb2 import Politician
 
-''' Updates all FTV Twitter accounts name, description, image, friends, etc. 
-		Make sure you want to update everything in this method before executing! '''
-	def update_all(self):
-		for p in Politician.objects():
-			print "Updating %s..." % p.name()
+''' Updates all FTV Twitter accounts name, description, image, etc. 
+	Make sure you want to update everything in this method before executing! '''
+def update_all():
+	for p in Politician.objects():
+		print "Updating %s..." % p.name()
+		try:
 			api = p.login_twitter()
-			
-			# Determine description, name, location, and url...
-			if p.twitter:
-				p.ftv.description = 'Tweeting the Congressional votes of @%s' % p.twitter # 160 char max
-			else:
-				p.ftv.description = 'Tweeting the Congressional votes of %s' % p.brief_name()
-			
-			p.ftv.name = 'FTV for %s' % p.brief_name() # 20 char max
+		except:
+			print "Could not authenticate with %s" % p.name()
+			break
+		
+		# Determine description, name, location, and url...
+		if p.twitter:
+			p.ftv.description = 'Tweeting the Congressional votes of @%s' % p.twitter # 160 char max
+		else:
+			p.ftv.description = 'Tweeting the Congressional votes of %s' % p.brief_name()
+		
+		p.ftv.name = 'FTV for %s' % p.brief_name() # 20 char max
+		if len(p.ftv.name) > 20:
+			p.ftv.name = p.ftv.name.replace('.', '')
 			if len(p.ftv.name) > 20:
-				p.ftv.name = p.ftv.name.replace('.', '')
+				p.ftv.name = "FTV @%s" % p.twitter
 				if len(p.ftv.name) > 20:
-					p.ftv.name = "FTV @%s" % p.twitter
-					if len(p.ftv.name) > 20:
-						print p['ftv']['name']
-						print len(p['ftv']['name'])
-						raise Exception
+					print p['ftv']['name']
+					print len(p['ftv']['name'])
+					raise Exception
 
-			# ...and write
+		# ...and write
+		try:
 			api.update_profile(name=p.ftv.name, 
 							location='Washington, D.C.', 
 							description=p.ftv.description,
@@ -40,25 +45,40 @@ from db.politiciandb2 import Politician
 			api.update_profile_image(profile_img_path)
 			background_img_path = settings.get('project_root') + '/static/img/congress.jpeg'
 			api.update_profile_background_image(background_img_path, tile='true') # Not working
-			p.save()
+			p.save
+		except:
+			print "Could not update %s" % p.name()
 
 
-			# Make every FTV account follow every other FTV account
-			fail_list = []
-			for p2 in Politician.objects(__raw__={'ftv':{'$exists':True}}):
-				if not p.bioguide_id == p2.bioguide_id:
+''' Make every FTV account follow every other FTV account '''
+def update_all_friends():
+	fail_list = []
+	for p in Politician.objects(): #__raw__={'ftv':{'$exists':True}}):
+		print "Updating friends of %s..." % p.name()
+		try:
+			api = p.login_twitter()
+		except:
+			print "Could not authenticate with %s" % p.name()
+			break
+
+		list_friends = api.friends_ids()
+
+		for p2 in Politician.objects(): #__raw__={'ftv':{'$exists':True}}):
+			if not p.bioguide_id == p2.bioguide_id and p2.ftv.twitter_id not in list_friends and p2.ftv.twitter not in fail_list:
+				try:
+					api.create_friendship(p2.ftv.twitter_id)
 					print "Following %s..." % p2.ftv.twitter
-					try:
-						api.create_friendship(p2.ftv.twitter_id)
-					except:
-						print p2.ftv.twitter
-						print p2.ftv.twitter_id
-						fail_list.append(p2.ftv.twitter)
-			print fail_list
+				except:
+					print p2.ftv.twitter
+					print p2.ftv.twitter_id
+					fail_list.append(p2.ftv.twitter)
+		print fail_list
+
 
 
 def main():
-    update_all()
+    #update_all()
+    update_all_friends()
 
 if  __name__ =='__main__':main()
 
