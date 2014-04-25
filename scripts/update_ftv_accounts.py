@@ -74,11 +74,29 @@ def update_all_friends():
 					fail_list.append(p2.ftv.twitter)
 		print fail_list
 
-
+''' Pulls actual p.ftv info from Twitter (except email) so that
+	database is completely accurate '''
+def check_twitter_ftv():
+	fail_list = []
+	for p in Politician.objects(title='Sen'):
+		print "Checking %s..." % p.name()
+		try:
+			api = p.login_twitter()
+		except:
+			print "Failed: %s" % p.name()
+			fail_list.append(p.bioguide_id)
+		me = api.verify_credentials()
+		p.ftv.twitter = me.screen_name
+		p.ftv.description = me.description
+		p.ftv.name = me.name
+		p.save()
+	if fail_list:
+		print fail_list
 
 def main():
     #update_all()
-    update_all_friends()
+    #update_all_friends()
+    check_twitter_ftv()
 
 if  __name__ =='__main__':main()
 

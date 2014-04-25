@@ -163,7 +163,7 @@ class Tweet(app.basic.BaseHandler):
             tweet_template.replace('voted ', '') # get rid of voting verb
 
           tweet = tweet_template.replace(REPS_ACCOUNT_PLACEHOLDER, name).replace(CHOICE_PLACEHOLDER, choice)
-          success = p.tweet(t)
+          success = p.tweet(tweet)
           # If successfull tweeted, save for entry to database
           if success:
             tweeted[p.bioguide_id] = choice
@@ -192,7 +192,7 @@ class Tweet(app.basic.BaseHandler):
           print 'Failed to send email to admin %s' % admin['user']['username']
           pass
 
-      return self.redirect('admin/?msg=tweet_success') 
+      return self.redirect('/admin?msg=tweet_success') 
 
 
   ''' Vote is defined as all arguments except tweet_text '''
@@ -222,6 +222,11 @@ class Database(app.basic.BaseHandler):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
     else:
-      politicians = Politician.objects()
+
+      title = self.get_argument('title', None)
+      if title:
+        politicians = Politician.objects(title=title)
+      else:
+        politicians = Politician.objects()
       return self.render('admin/database.html', politicians=politicians)
 
