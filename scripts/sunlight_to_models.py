@@ -12,7 +12,7 @@ except:
     pass
 
 from sunlight import congress
-from db import politiciandb
+from db.old import politiciandb
 
 ### Pull data from sunlight
 politicians = congress.all_legislators_in_office()

@@ -6,7 +6,7 @@ try:
 except:
     pass
 
-from db.politiciandb2 import Politician
+from db.politiciandb import Politician
 
 ''' Updates all FTV Twitter accounts name, description, image, etc. 
 	Make sure you want to update everything in this method before executing! '''

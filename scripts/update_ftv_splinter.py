@@ -7,7 +7,7 @@ try:
 except:
     pass
 
-from db.politiciandb2 import Politician
+from db.politiciandb import Politician
 import splinter
 import time
 

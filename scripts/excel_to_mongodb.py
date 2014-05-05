@@ -7,8 +7,8 @@ except:
 
 import csv
 from db.mongo import db
-from db.politiciandb2 import Politician, FTV
-from db import politiciandb
+from db.politiciandb import Politician, FTV
+from db.old import politiciandb
 import tweepy
 
 
