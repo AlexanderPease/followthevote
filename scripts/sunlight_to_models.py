@@ -1,4 +1,9 @@
-''' Inits or updates politiciandb with Sunlight database info and other fields'''
+''' 
+
+OLD uses politiciandb (w/out MongoEngine)
+Inits or updates politiciandb with Sunlight database info and other fields
+
+'''
 import sys, os
 try: 
     sys.path.insert(0, '/Users/AlexanderPease/git/ftv/followthevote')
@@ -7,7 +12,7 @@ except:
     pass
 
 from sunlight import congress
-from db import politiciandb
+from db.old import politiciandb
 
 ### Pull data from sunlight
 politicians = congress.all_legislators_in_office()

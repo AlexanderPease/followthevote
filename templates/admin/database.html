@@ -7,22 +7,21 @@
       <th>District/Seniority</th>
       <th>Twitter</th>
       <th>Twitter_FTV</th>
+      <th>Twitter_FTV Password</th>
       <th>Email</th>
       <th>Password</th>
     </tr>
     {% for p in politicians %}
       <tr>
-        <td>{{ p['name'] }}</td>
-        <td>{{ p['chamber'] }}</td>
-        <td>{{ p['state'] }}</td>
-        <td>{{ p['district'] }}</td>
-        <td>{{ p['twitter_id'] }}</td>
-
-        {% if 'ftv' in p.keys() %}
-          <td>{{ p['ftv']['twitter'] }}</td>
-          <td>{{ p['ftv']['email'] }}</td>
-          <td>{{ p['ftv']['password'] }}</td>
-        {% end %}
+        <td>{{ p.name() }}</td>
+        <td>{{ p.chamber }}</td>
+        <td>{{ p.state }}</td>
+        <td>{{ p.district }}</td>
+        <td>{{ p.twitter }}</td>
+        <td>{{ p.ftv.twitter }}</td>
+        <td>{{ p.ftv.twitter_password }}</td>
+        <td>{{ p.ftv.email }}</td>
+        <td>{{ p.ftv.email_password }}</td>
       </tr>
     {% end %}
   </table>

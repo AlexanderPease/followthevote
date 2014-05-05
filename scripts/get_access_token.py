@@ -22,6 +22,7 @@ except:
 
 import webbrowser
 import oauth2 as oauth
+import splinter
 
 # For local usage
 import sys, os
@@ -29,22 +30,23 @@ try:
     sys.path.insert(0, '/Users/AlexanderPease/git/ftv/followthevote')
     import settings
 except:
-    pass
+    print 'could not import settings'
 
+from db.mongo import db 
 
 REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token'
 ACCESS_TOKEN_URL = 'https://api.twitter.com/oauth/access_token'
 AUTHORIZATION_URL = 'https://api.twitter.com/oauth/authorize'
 SIGNIN_URL = 'https://api.twitter.com/oauth/authenticate'
 
-''' Gets access key and token for the Twitter user currently logged into default browser '''
-def get_access_token(consumer_key, consumer_secret):
-
+''' Twitter and twitter_password are for Splinter to log in with. Passing in both
+    arguments triggers automatic flow. Without them, user is required to manually log in '''
+def get_access_token(consumer_key, consumer_secret, twitter=None, twitter_password=None):
     signature_method_hmac_sha1 = oauth.SignatureMethod_HMAC_SHA1()
     oauth_consumer = oauth.Consumer(key=consumer_key, secret=consumer_secret)
     oauth_client = oauth.Client(oauth_consumer)
 
-    print 'Requesting temp token from Twitter'
+    print 'Requesting temp token from Twitter...'
 
     resp, content = oauth_client.request(REQUEST_TOKEN_URL, 'POST', body="oauth_callback=oob")
 
@@ -54,98 +56,61 @@ def get_access_token(consumer_key, consumer_secret):
         request_token = dict(parse_qsl(content))
         url = '%s?oauth_token=%s' % (AUTHORIZATION_URL, request_token['oauth_token'])
 
-        print ''
-        print 'I will try to start a browser to visit the following Twitter page'
-        print 'if a browser will not start, copy the URL to your browser'
-        print 'and retrieve the pincode to be used'
-        print 'in the next step to obtaining an Authentication Token:'
-        print ''
+        print 'Requesting authorization from user...'
         print url
-        print ''
 
-        webbrowser.open(url)
-        pincode = raw_input('Pincode? ')
+        if twitter and twitter_password:
+            with splinter.Browser('chrome') as browser: # browser closes at end
+                browser.visit(url)
+
+                # Log in 
+                browser.fill('session[username_or_email]', twitter)
+                browser.fill('session[password]', twitter_password)
+                browser.find_by_id('allow').first.click()
+                
+                # After click through, read pin_code
+                pincode = browser.find_by_css('code').first.html
+        else:    
+            webbrowser.open(url) # Manually open browser
+            pincode = raw_input('Pincode? ')
 
         token = oauth.Token(request_token['oauth_token'], request_token['oauth_token_secret'])
         token.set_verifier(pincode)
 
-        print ''
-        print 'Generating and signing request for an access token'
-        print ''
-
+        print 'Generating and signing request for an access token...'
         oauth_client = oauth.Client(oauth_consumer, token)
         resp, content = oauth_client.request(ACCESS_TOKEN_URL, method='POST', body='oauth_callback=oob&oauth_verifier=%s' % pincode)
         access_token = dict(parse_qsl(content))
 
         if resp['status'] != '200':
             print 'The request for a Token did not succeed: %s' % resp['status']
+            print resp
             print access_token
         else:
             print 'Access Token key: %s' % access_token['oauth_token']
             print 'Access Token secret: %s' % access_token['oauth_token_secret']
-            print ''
             return access_token['oauth_token'], access_token['oauth_token_secret']
+
 def main():
-    # OAuth
-    access_key, access_secret = get_access_token(settings.get('twitter_consumer_key'), settings.get('twitter_consumer_secret'))
-
-''' DJANGO 
-def main():
-    # Check to see if Twitter_FTV model exists, or else create
-    handle = raw_input('Twitter_FTV handle: ')
-    try:
-        twitter_ftv = Twitter_FTV.objects.get(handle=handle)
-    except:
-        # Identify desired politician to link account to
-        print "Model does not yet exist. Please enter additional info to create:"
-        last_name = raw_input('Last name of politician: ')
-        politicians = Politician.objects.filter(last_name__contains=last_name)
-        if len(politicians) == 0:
-            print "No politicians found, please try again"
-            return
-        elif len(politicians) == 1:
-            p_id = politicians[0].id
-        else:  
-            for p in politicians:
-                print "%s %s: ID %s" % (p.first_name, p.last_name, p.id)
-            p_id = raw_input('ID of correct politician (see above): ')
-
-        # Finally create the account
-        try: 
-            twitter_ftv = Twitter_FTV.objects.create(handle=handle, politician_id=p_id)
-            print 'Model successfully created'
-        except:
-            'Model could not be created'
-            return
-
+    #access_key, access_secret = get_access_token(settings.get('twitter_consumer_key'), settings.get('twitter_consumer_secret')
     
-    # Check for other, non-necessary fields
-    if not twitter_ftv.email:
-        code = raw_input('Enter code (to create email address and password): ')
-        twitter_ftv.email = code + "@followthevote.org"
-        twitter_ftv.email_password = "statueofliberty" + code
-    twitter_ftv.save()
+    # OAuth all paid_twitter accounts 
+    for a in list(db.paid_twitter.find()):
+        # Only those without access keys
+        if 'access_key' not in a.keys():
+            access_key, access_secret = get_access_token(settings.get('twitter_consumer_key'), 
+                settings.get('twitter_consumer_secret'), 
+                twitter = a['twitter'],
+                twitter_password = a['twitter_password'])
+            a['access_key'] = access_key
+            a['access_secret'] = access_secret
+            db.paid_twitter.update({'twitter':a['twitter']}, a, upsert=True)
 
-    # OAuth
-    print 'Connecting to Twitter...'
-    if not twitter_ftv.access_key or not twitter_ftv.access_secret:
-        access_key, access_secret = get_access_token(settings.get('twitter_consumer_key'), settings.get('twitter_consumer_secret'))
-        twitter_ftv.access_key = access_key
-        twitter_ftv.access_secret = access_secret
-        twitter_ftv.save()
-    else:
-        'Already OAuthed to Twitter'
-
-    # Get Twitter account id
-    if not twitter_ftv.user_id:
-        api = twitter_ftv.login()
-        user = api.GetUser(screen_name = twitter_ftv.handle) # user is a class from python-twitter
-        twitter_ftv.user_id = user.id
-        twitter_ftv.save()
-
-    print 'Model complete!'
-'''
 
 
 if __name__ == "__main__":
     main()
+
+
+
+
