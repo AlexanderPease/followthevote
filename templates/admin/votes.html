@@ -1,6 +1,20 @@
 {% extends "../base.html" %}
 
 {% block body %}
+  
+  <h4>Search Sunlight API</h4>
+  <form method="GET" action="">
+    <label>Chamber</label>
+    <select name="chamber">
+      <option value="">Both</option>
+      <option value="senate">Senate</option>
+      <option value="house">House</option>
+    </select>
+    </br>
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+  <hr>
+
   {% if msg %}
     <h4>{{ msg }}</h4>
   {% end %}
@@ -37,17 +51,7 @@
 
   </br>
 
-  {% if form %}
-    <form method="POST" action="">
-      <label>Chamber</label>
-      <select name="chamber">
-        <option>---</option>
-        <option value="senate">Senate</option>
-        <option value="house">House</option>
-      </select>
-      </br>
-      <button type="submit" class="btn btn-primary">Search</button>
-    </form>
-  {% end %}
+    
+
 
 {% end %}

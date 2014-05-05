@@ -3,10 +3,11 @@ import tornado.web
 import settings
 import requests, datetime
 from sunlight import congress
+from sunlight.pagination import PagingService
 from geopy import geocoders
 
 from db import tweetdb, userdb 
-from db.politiciandb2 import FTV, Politician
+from db.politiciandb import FTV, Politician
 
 ###########################
 ### List the available admin tools
@@ -43,25 +44,17 @@ class Votes(app.basic.BaseHandler):
     if self.current_user not in settings.get('staff'):
       self.redirect('/')
 
-    form = self.get_votes_form()
-    msg = 'What shall we tweet about? Search the Congressional Archives'
-
-    return self.render('admin/votes.html', form=form, msg=msg, votes=[])
-
-  @tornado.web.authenticated
-  def post(self):
-    if self.current_user not in settings.get('staff'):
-      return self.redirect('/')
-
-    form = self.get_votes_form()
-
     # Sunlight API pukes on null args, so sanitize
-    kwargs = {'per_page': 50}
+    kwargs = {'per_page': 50} # Max 50 results
+    form = self.get_votes_form()
     for k, v in form.iteritems():
       if v:
         kwargs[k] = v
 
     # Query Sunlight API
+    print kwargs
+    #congress2 = PagingService(congress)
+    #votes = list(congress2.votes(**kwargs))
     votes = congress.votes(**kwargs)
 
     # Post-query logic
@@ -69,7 +62,7 @@ class Votes(app.basic.BaseHandler):
       err = 'No search results, try again'
       return self.render('admin/votes.html', form=form, err=err)
     if len(votes) > 1:
-      msg = 'Found %s results, please choose the correct one:' % len(votes)
+      msg = 'Showing %s results:' % len(votes)
       # TODO: returns max 50 results on first page. Give option to search further pages
     else:
       msg = 'Please confirm that this is the correct vote'
