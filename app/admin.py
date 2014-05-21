@@ -215,10 +215,21 @@ class Database(app.basic.BaseHandler):
       self.redirect('/')
     else:
 
+      # Database filtering
       title = self.get_argument('title', None)
+      no_description = self.get_argument('no_description', None)
       if title:
         politicians = Politician.objects(title=title)
+      elif no_description:
+        politicians = Politician.objects(ftv__description="")
       else:
         politicians = Politician.objects()
-      return self.render('admin/database.html', politicians=politicians)
+
+      # Order
+      politicians = politicians.order_by('-title', 'last_name')
+
+      if self.get_argument('show_twitter', None):
+        return self.render('admin/database_twitter.html', politicians=politicians)
+      else:
+        return self.render('admin/database.html', politicians=politicians)
 
