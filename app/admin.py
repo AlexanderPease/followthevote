@@ -3,7 +3,7 @@ import tornado.web
 import settings
 import requests, datetime
 from sunlight import congress
-from sunlight.pagination import PagingService
+#from sunlight.pagination import PagingService
 from geopy import geocoders
 
 from db import tweetdb, userdb 
