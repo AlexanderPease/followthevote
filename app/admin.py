@@ -19,7 +19,11 @@ class AdminHome(app.basic.BaseHandler):
     if self.current_user not in settings.get('staff'):
       return self.redirect('/')
     msg = self.get_argument('msg', '')
-    if msg == 'tweet_success':
+    num_accounts_failed = self.get_argument('num_accounts_failed', '')
+
+    if msg == 'tweet_success' and num_accounts_failed:
+      msg = '%s accounts failed to tweet, the rest tweeted successfully!' % num_accounts_failed 
+    elif msg == 'tweet_success':
       msg = 'All accounts successfully tweeted!'
 
     err = self.get_argument('err', '')
@@ -128,7 +132,8 @@ class Tweet(app.basic.BaseHandler):
       individual_votes = individual_votes[0]['voter_ids'] # returns a dict with bioguide_ids for keys
 
       # Tweet for every applicable politician. Yes, this is suboptimal
-      tweeted = {}
+      tweeted = {} # Track successfully tweeted accounts...
+      failed = {} # and those that failed
       for p in Politician.objects():
         ### IN FUTURE JUST USE THEIR OWN HANDLE. JUST DON'T WANT EXPOSURE YET
         # Hierarchy of name choosing
@@ -159,6 +164,9 @@ class Tweet(app.basic.BaseHandler):
           # If successfull tweeted, save for entry to database
           if success:
             tweeted[p.bioguide_id] = choice
+          else: 
+            failed[p.bioguide_id] = choice
+        # endfor p in Politician.objects():
       
       # Save to database
       save_tweet = {
@@ -184,7 +192,10 @@ class Tweet(app.basic.BaseHandler):
           print 'Failed to send email to admin %s' % admin['user']['username']
           pass
 
-      return self.redirect('/admin?msg=tweet_success') 
+      if len(failed) is 0:
+        return self.redirect('/admin?msg=tweet_success') 
+      else:
+        return self.redirect('/admin?msg=tweet_success&num_accounts_failed=%s' % len(failed)) 
 
 
   ''' Vote is defined as all arguments except tweet_text '''
@@ -202,6 +213,120 @@ class Tweet(app.basic.BaseHandler):
   ''' Get placeholder  '''
   def get_tweet_beginning(self):
     return "%s voted %s on " % (REPS_ACCOUNT_PLACEHOLDER, CHOICE_PLACEHOLDER)
+
+
+###########################
+### Tweet without any voting info
+### /admin/tweet_no_votes
+###########################
+class Tweet(app.basic.BaseHandler):
+  @tornado.web.authenticated
+  def get(self):
+    if self.current_user not in settings.get('staff'):
+      return self.redirect('/')
+
+    vote = self.get_vote() # vote is defined as the GET parameters passed into Tweet(), except tweet_text
+    tweet_beginning = self.get_tweet_beginning()
+    form = self.get_tweet_form()
+    return self.render('admin/tweet_no_votes.html', vote=vote, tweet_beginning=tweet_beginning, form=form)
+
+  @tornado.web.authenticated
+  def post(self):
+    if self.current_user not in settings.get('staff'):
+      return self.redirect('/')
+    
+    vote = self.get_vote()
+    tweet_beginning = self.get_tweet_beginning()
+    tweet_text = self.get_argument('tweet_text','')
+    tweet_template = tweet_beginning + tweet_text
+
+
+    # Check if rePOSTing. I did this once and it doesn't break anything
+    # but fails when trying to tweet, so sets tweet document to 0 accounts tweeted
+    existing_tweet = tweetdb.find_one({'vote':vote})
+    if existing_tweet:
+      return self.redirect('admin/?err=tweet_exists') 
+
+    if len(tweet_text) > 110: # poorly hardcoded. calculated from get_tweet_beginning()
+      err = 'Some tweets will exceed 140 characters in length!'
+      return self.render('admin/tweet.html', err=err, tweet_beginning=tweet_beginning, vote=vote, form=self.get_tweet_form())
+
+    else: 
+      vote['fields'] = 'voter_ids'
+      individual_votes = congress.votes(**vote)
+
+      if len(individual_votes) != 1:
+        print 'Error finding votes'
+        raise Exception
+          
+      individual_votes = individual_votes[0]['voter_ids'] # returns a dict with bioguide_ids for keys
+
+      # Tweet for every applicable politician. Yes, this is suboptimal
+      tweeted = {} # Track successfully tweeted accounts...
+      failed = {} # and those that failed
+      for p in Politician.objects():
+        ### IN FUTURE JUST USE THEIR OWN HANDLE. JUST DON'T WANT EXPOSURE YET
+        # Hierarchy of name choosing
+        if len(p.brief_name()) <= 16:
+            name = p.brief_name()
+        #elif p['twitter']:
+        #    name = p['twitter']
+        elif len(p.last_name) <= 16:
+            name = p.last_name
+        elif p.title == 'Sen':
+            name = "Senator"
+        else:
+            name = "Representative"
+
+        # Find corresponding vote
+        if p.bioguide_id in individual_votes:
+          choice = individual_votes[p.bioguide_id]
+          if choice == 'Yea':
+              choice = 'YES'
+          elif choice == 'Nay':
+              choice = 'NO'
+          elif choice == 'Not Voting':
+            choice = 'abstained'
+            tweet_template.replace('voted ', '') # get rid of voting verb
+
+          tweet = tweet_template.replace(REPS_ACCOUNT_PLACEHOLDER, name).replace(CHOICE_PLACEHOLDER, choice)
+          success = p.tweet(tweet)
+          # If successfull tweeted, save for entry to database
+          if success:
+            tweeted[p.bioguide_id] = choice
+          else: 
+            failed[p.bioguide_id] = choice
+        # endfor p in Politician.objects():
+      
+      # Save to database
+      save_tweet = {
+        'datetime': datetime.datetime.now(),
+        'vote': vote, 
+        'tweeted': tweeted, # Who actually had FTV accounts, i.e. actually tweeted 
+        'tweet_template': tweet_template,
+        'placeholders': {'reps_account_placeholder': REPS_ACCOUNT_PLACEHOLDER, 'choice_placeholder': CHOICE_PLACEHOLDER},
+        'tweet': tweet, # A sample tweet (always from last rep in database to tweet)
+        'individual_votes': individual_votes,
+        'admin': self.current_user
+        }
+      tweetdb.save(save_tweet)
+
+      # Email admins
+      subject = '%s tweeted!' % self.current_user
+      text_body = tweet_template
+      for sn in settings.get('staff'):
+        admin = userdb.get_user_by_screen_name(sn)
+        try:
+          self.send_email(admin['email_address'], subject, text_body)
+        except:
+          print 'Failed to send email to admin %s' % admin['user']['username']
+          pass
+
+      if len(failed) is 0:
+        return self.redirect('/admin?msg=tweet_success') 
+      else:
+        return self.redirect('/admin?msg=tweet_success&num_accounts_failed=%s' % len(failed)) 
+
      
 
 ###########################
