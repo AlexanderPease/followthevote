@@ -226,7 +226,11 @@ class Tweet_No_Vote(app.basic.BaseHandler):
       return self.redirect('/')
 
     form = self.get_tweet_form()
-    return self.render('admin/tweet_no_votes.html', vote=vote, form=form)
+    return self.render('admin/tweet_no_vote.html', form=form)
+
+  ''' Gets arguments for votes form '''
+  def get_tweet_form(self):
+      return {'tweet_text': self.get_argument('tweet_text', '')}
 
   @tornado.web.authenticated
   def post(self):

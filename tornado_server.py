@@ -15,9 +15,9 @@ import app.public
 import app.admin
 import app.twitter
 
-import newrelic.agent
-path = os.path.join(settings.get("project_root"), 'newrelic.ini')
-newrelic.agent.initialize(path, settings.get("environment"))
+#import newrelic.agent I also deleted newrelic.ini. Need to re-add if we want 
+#path = os.path.join(settings.get("project_root"), 'newrelic.ini')
+#newrelic.agent.initialize(path, settings.get("environment"))
 
 class Application(tornado.web.Application):
   def __init__(self):
