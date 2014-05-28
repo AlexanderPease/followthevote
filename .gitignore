@@ -3,3 +3,5 @@
 .env
 ghostdriver.log
 settings_local_environ.py
+local
+local/*

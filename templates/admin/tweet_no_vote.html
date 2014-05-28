@@ -10,12 +10,22 @@
   {% end %}
 
   {% if form %}
-    <h4>Complete the tweet!</h4>
-
-    <div id="tweet_beginning">
-      {{ tweet_beginning }}...
-    </div>
+    <h4>Tweet!</h4>
     <form method="POST" action="">
+
+      <label>Choose accounts...</label>
+      <select name="chamber">
+        <option value="">---</option>
+        <option value="all">All FTV accounts</option>
+        <option value="senate">All Senators</option>
+        <option value="house">All Representatives</option>
+      </select>
+      </br>
+
+      <label>or type an account name:</label>
+      
+
+
       <div class="fieldWrapper">
           <textarea name="tweet_text" id="id_tweet_text" rows="4" class="field span8">{{ form['tweet_text'] }}</textarea>
       </div>
@@ -23,17 +33,6 @@
       </br>
       <button type="submit" class="btn btn-primary">Tweet</button>
     </form>
-
-    <h4>Suggested info</h4>
-    Question: <a href="{{ vote['url'] }}" target="_blank">{{ vote['question'] }}</a></br>
-    Roll ID: {{ vote['roll_id'] }}</br>
-
-    {% if 'bill_id' in vote.keys() %}
-      Bill ID: {{ vote['bill_id'] }}</br>
-    {% end %}
-    Chamber: {{ vote['chamber'].capitalize() }}</br>
-    Voted at: {{ vote['voted_at'] }}</br>
-    Result: {{ vote['result'] }}</br>
         
   {% end %}
 

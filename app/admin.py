@@ -217,18 +217,16 @@ class Tweet(app.basic.BaseHandler):
 
 ###########################
 ### Tweet without any voting info
-### /admin/tweet_no_votes
+### /admin/tweet_no_vote
 ###########################
-class Tweet(app.basic.BaseHandler):
+class Tweet_No_Vote(app.basic.BaseHandler):
   @tornado.web.authenticated
   def get(self):
     if self.current_user not in settings.get('staff'):
       return self.redirect('/')
 
-    vote = self.get_vote() # vote is defined as the GET parameters passed into Tweet(), except tweet_text
-    tweet_beginning = self.get_tweet_beginning()
     form = self.get_tweet_form()
-    return self.render('admin/tweet_no_votes.html', vote=vote, tweet_beginning=tweet_beginning, form=form)
+    return self.render('admin/tweet_no_votes.html', vote=vote, form=form)
 
   @tornado.web.authenticated
   def post(self):
@@ -239,7 +237,6 @@ class Tweet(app.basic.BaseHandler):
     tweet_beginning = self.get_tweet_beginning()
     tweet_text = self.get_argument('tweet_text','')
     tweet_template = tweet_beginning + tweet_text
-
 
     # Check if rePOSTing. I did this once and it doesn't break anything
     # but fails when trying to tweet, so sets tweet document to 0 accounts tweeted

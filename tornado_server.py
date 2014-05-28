@@ -42,7 +42,7 @@ class Application(tornado.web.Application):
       (r"/admin", app.admin.AdminHome),
       (r"/admin/votes", app.admin.Votes),
       (r"/admin/tweet", app.admin.Tweet),
-      (r"/admin/tweet_no_votes", app.admin.Tweet_No_Votes),
+      (r"/admin/tweet_no_vote", app.admin.Tweet_No_Vote),
       (r"/admin/database", app.admin.Database),
 
       # Public
