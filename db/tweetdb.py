@@ -77,7 +77,12 @@ def find_one(kwarg):
 ''' Saves a tweet to the database.
     Must match entire vote dict to update vs. upsert '''
 def save(t):
-    return db.tweet.update({'vote':t['vote']}, t, upsert=True)
+    if 'vote' in t.keys():
+        return db.tweet.update({'vote':t['vote']}, t, upsert=True)
+    elif 'tweet' in t.keys(): 
+        return db.tweet.update({'tweet':t['tweet']}, t, upsert=True)
+    else:
+        raise Exception 
 
 '''
 def remove(intro):

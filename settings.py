@@ -40,10 +40,6 @@ options = {
 }
 
 default_options = {
-  'active_theme': "default",
-  'site_title': "The Conversation",
-  'site_intro': "This is a website where people talk",
-  
   'project_root': os.path.abspath(os.path.join(os.path.dirname(__file__))),
 
   # twitter details
@@ -63,25 +59,6 @@ default_options = {
   # postmark details
   'sendgrid_user': os.environ.get("SENDGRID_USER"),
   'sendgrid_secret': os.environ.get("SENDGRID_SECRET"),
-
-  # hackpad details
-  'hackpad_oauth_client_id': os.environ.get("HACKPAD_OAUTH_CLIENT_ID"), 
-  'hackpad_oauth_secret': os.environ.get("HACKPAD_OAUTH_SECRET"), 
-  'hackpad_domain': os.environ.get("HACKPAD_DOMAIN"),
-
-  # google api key
-  'google_api_key': os.environ.get("GOOGLE_API_KEY"),
-
-  # bitly access token
-  'bitly_access_token': os.environ.get("BITLY_ACCESS_TOKEN"),
-
-  # other control variables
-  'tinymce_valid_elements': '',
-  'post_char_limit': 1000,
-  'sticky': None,
-  'read_only' : False,
-  'max_simultaneous_connections' : 10,
-  'hot_post_set_count': 200,
 
   'staff':[
     "AlexanderPease",

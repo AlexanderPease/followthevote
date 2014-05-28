@@ -6,64 +6,43 @@
   {% end %}
 
   {% if err %}
-    {{ err }}</br>
+    <p class="text-error">{{ err }}</p></br>
   {% end %}
 
-  {% if form %}
-    <h4>Tweet!</h4>
-    <form method="POST" action="">
 
-      <label>Choose accounts...</label>
-      <select name="chamber">
-        <option value="">---</option>
-        <option value="all">All FTV accounts</option>
-        <option value="senate">All Senators</option>
-        <option value="house">All Representatives</option>
-      </select>
-      </br>
-
-      <label>or type an account name:</label>
-      
-
-
-      <div class="fieldWrapper">
-          <textarea name="tweet_text" id="id_tweet_text" rows="4" class="field span8">{{ form['tweet_text'] }}</textarea>
+  <h4>Tweet!</h4>
+  <form method="POST" action="" role="form">
+    <div class="row">
+      <div class="span4">
+        <label>Choose accounts...</label>
+        <select name="chamber">
+          <option value="">---</option>
+          <option value="all">All FTV accounts</option>
+          <option value="senate">All Senators</option>
+          <option value="house">All Representatives</option>
+        </select>
       </div>
-      <span id="tweet_counter"></span>
-      </br>
-      <button type="submit" class="btn btn-primary">Tweet</button>
-    </form>
-        
-  {% end %}
+
+      <div class="span4">
+        <div class="form-group">
+          <label>Or type an FTV account name:</label>
+          <input type="text" name="account">
+        </div>
+      </div>
+    </div> <!--row-->
+    </br>
+
+    Enter tweet text:
+    <div class="fieldWrapper">
+        <textarea name="tweet_text" id="id_tweet_text" rows="4" class="field span8">{{ tweet_text }}</textarea>
+    </div>
+    <span id="tweet_counter"></span>
+    </br>
+    <button type="submit" class="btn btn-primary">Tweet</button>
+  </form>
 
 {% end %}
 
 {% block javascript %}
-  <script>
-    $(document).ready(function() {  
-      // Track changes in tweet text box
-      tweet_counter();
-      $('#id_tweet_text').on('input', function () {
-        tweet_counter();
-      });
-
-    }); //$(document).ready();
-
-    function tweet_counter() {
-      max_length = 140;
-      //tweet_beginning = $("#tweet_beginning")
-      tweet_beginning = 30; // hardcoded because actual text doesn't match potential length
-      tweet_input = $('#id_tweet_text').val();
-      char_remaining = max_length - tweet_input.length - tweet_beginning;
-      $('#tweet_counter').text(char_remaining + " characters left");
-      
-      // styling
-      if (char_remaining < 0) {
-        $('#tweet_counter').css("color", "red");
-      }
-      else{
-        $('#tweet_counter').css("color", "black");
-      }
-    }
-  </script>
+  {% include "tweet_counter.html" %}
 {% end %}
