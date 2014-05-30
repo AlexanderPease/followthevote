@@ -64,11 +64,12 @@ class Politician(Document):
 	  if api:
 	    try:
 	      status = api.update_status(t)
-	      print '@%s posted status: %s' % (self.ftv.twitter, t)
+	      print '@%s posted status:' % self.ftv.twitter
+	      print t.encode('utf-8')
 	      return True
 	    except:
-	      # raise Exception
-	      print '@%s FAILED to post status: %s' % (self.ftv.twitter, t)
+	      print '@%s FAILED to post status:' % self.ftv.twitter
+	      print t.encode('utf-8')
 	      return False
 
 	
