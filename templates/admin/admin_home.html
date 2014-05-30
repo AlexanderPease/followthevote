@@ -35,7 +35,13 @@
 	{% for t in tweets %}
 		@{{ t['admin'] }} for {{ len(t['tweeted']) }} FTV accounts ({{ t['datetime'].date() }}):
 		</br>
-		"{{ t['tweet_template'] }}"
+		{% if 'tweet_template' in t.keys() %}
+			"{{ t['tweet_template'] }}"
+		{% elif 'tweet' in t.keys() %}
+			"{{ t['tweet'] }}"
+		{% elif 'tweet' in t.keys() %}
+			error reading tweet in db
+		{% end %}
 		</br></br>
 	{% end %}
 
