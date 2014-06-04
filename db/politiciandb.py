@@ -59,6 +59,9 @@ class Politician(Document):
 	''' Actually tweet from their FTV account! 
 	    Returns True if successfully tweeted, False if failed '''
 	def tweet(self, t, api=None):
+	  if len(t) > 140:
+	  	print 'Tweet too long!!'
+	  	t = t[0:140]
 	  if not api:
 	  	api = self.login_twitter()
 	  if api:
