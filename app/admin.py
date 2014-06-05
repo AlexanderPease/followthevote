@@ -115,7 +115,6 @@ class Tweet(app.basic.BaseHandler):
     if existing_tweet:
       return self.redirect('admin/?err=tweet_exists') 
 
-    print len(tweet_text)
     if len(tweet_text) > 110: # poorly hardcoded. calculated from get_tweet_beginning()
       err = 'Some tweets will exceed 140 characters in length!'
       return self.render('admin/tweet.html', err=err, tweet_beginning=tweet_beginning, vote=vote, form=self.get_tweet_form())
@@ -137,7 +136,7 @@ class Tweet(app.basic.BaseHandler):
         ### IN FUTURE JUST USE THEIR OWN HANDLE. JUST DON'T WANT EXPOSURE YET
         # Hierarchy of name choosing
         if p.twitter:
-          name = p.twitter
+          name = "@" + p.twitter
         elif len(p.brief_name()) <= 16:
             name = p.brief_name()
         elif len(p.last_name) <= 16:
@@ -156,12 +155,13 @@ class Tweet(app.basic.BaseHandler):
               choice = 'NO'
           elif choice == 'Not Voting':
             choice = 'abstained'
-            tweet_beginning = tweet_beginning.replace('voted ', '') # get rid of voting verb
 
           # Turn template into actual tweet and tweet!
           tweet_template = tweet_beginning + tweet_text # Further down replace 
-          tweet = tweet_template.replace(REPS_ACCOUNT_PLACEHOLDER, name).replace(CHOICE_PLACEHOLDER, choice)
-          print len(tweet)
+          tweet = tweet_template.replace(REPS_ACCOUNT_PLACEHOLDER, name).replace(CHOICE_PLACEHOLDER, choice)  
+          if choice == 'abstained':
+            tweet = tweet.replace('voted ', '') # get rid of voting verb if abstained
+
           success = p.tweet(tweet)
           # If successfull tweeted, save for entry to database
           if success:
