@@ -1,7 +1,7 @@
 import app.basic
 import tornado.web
 import settings
-import requests, datetime
+import requests, datetime, logging
 from sunlight import congress
 #from sunlight.pagination import PagingService
 from geopy import geocoders
@@ -133,7 +133,6 @@ class Tweet(app.basic.BaseHandler):
       tweeted = {} # Track successfully tweeted accounts...
       failed = {} # and those that failed
       for p in Politician.objects():
-        ### IN FUTURE JUST USE THEIR OWN HANDLE. JUST DON'T WANT EXPOSURE YET
         # Hierarchy of name choosing
         if p.twitter:
           name = "@" + p.twitter
@@ -168,6 +167,9 @@ class Tweet(app.basic.BaseHandler):
             tweeted[p.bioguide_id] = choice
           else: 
             failed[p.bioguide_id] = choice
+
+          logging.info(len(tweeted))
+          logging.info(len(failed))
         # endfor p in Politician.objects():
       
       # Save to database
@@ -182,6 +184,7 @@ class Tweet(app.basic.BaseHandler):
         'admin': self.current_user
         }
       tweetdb.save(save_tweet)
+      logging.info('saved tweet')
 
       # Email admins
       subject = '%s tweeted!' % self.current_user
@@ -292,6 +295,7 @@ class Tweet_No_Vote(app.basic.BaseHandler):
       'admin': self.current_user
       }
     tweetdb.save(save_tweet)
+    logging.info('saved tweet')
 
     # Email admins
     subject = '%s tweeted!' % self.current_user

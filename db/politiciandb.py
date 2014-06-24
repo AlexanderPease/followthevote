@@ -59,8 +59,9 @@ class Politician(Document):
 	''' Actually tweet from their FTV account! 
 	    Returns True if successfully tweeted, False if failed '''
 	def tweet(self, t, api=None):
+	  logging.info('entered tweet()')
 	  if len(t) > 140:
-	  	print 'Tweet too long!!'
+	  	logging.info('Tweet too long!!')
 	  	t = t[0:140]
 	  if not api:
 	  	api = self.login_twitter()
@@ -79,6 +80,7 @@ class Politician(Document):
 	    except:
 	    	logging.info('Could not log tweet to console, must be encoding error')
 
+	    logging.info('leaving tweet()')
 	    return return_flag
 
 	
