@@ -68,12 +68,18 @@ class Politician(Document):
 	    try:
 	      status = api.update_status(t)
 	      logging.info('@%s posted status:' % self.ftv.twitter)
-	      logging.info(t.encode('utf-8'))
-	      return True
+	      return_flag = True
 	    except:
 	      logging.info('@%s FAILED to post status:' % self.ftv.twitter)
-	      #print t.encode('utf-8')
-	      return False
+	      return_flag = False
+
+	    # Log status for debugging
+	    try:
+	    	logging.info(t)
+	    except:
+	    	logging.info('Could not log tweet to console, must be encoding error')
+
+	    return return_flag
 
 	
 
