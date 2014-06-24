@@ -1,6 +1,6 @@
 import settings
 from mongoengine import *
-import tweepy
+import tweepy, logging
 
 mongo_database = settings.get('mongo_database')
 connect('politician', host=mongo_database['host'])
@@ -67,12 +67,12 @@ class Politician(Document):
 	  if api:
 	    try:
 	      status = api.update_status(t)
-	      print '@%s posted status:' % self.ftv.twitter
-	      print t.encode('utf-8')
+	      logging.info('@%s posted status:' % self.ftv.twitter)
+	      logging.info(t.encode('utf-8'))
 	      return True
 	    except:
-	      print '@%s FAILED to post status:' % self.ftv.twitter
-	      print t.encode('utf-8')
+	      logging.info('@%s FAILED to post status:' % self.ftv.twitter)
+	      #print t.encode('utf-8')
 	      return False
 
 	
