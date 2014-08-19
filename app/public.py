@@ -57,5 +57,10 @@ class Index(app.basic.BaseHandler):
     senators = Politician.objects(title='Sen', state=district['state'])
     if len(senators) != 2:
         raise Exception
-    print type(representative)
-    return self.render('public/results.html', results=[representative, senators[0], senators[1]], ordinal=ui_methods.ordinal)
+    return self.render('public/results.html', 
+        results=[representative, senators[0], senators[1]], 
+        title_message="You are a member of %s's %s Congressional District" % (representative.full_state_name, ui_methods.ordinal(representative.district)),
+        ordinal=ui_methods.ordinal)
+
+
+

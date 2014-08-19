@@ -3,9 +3,16 @@
 {% block body %}
 
   <div class="jumbotron">
-    <h3>You're in {{ results[0].full_state_name }}'s {{ ordinal(results[0].district) }} Congressional District</h3>
+    <h3>
+      {% if len(title_message) < 60 %}
+        {{ title_message }}
+      {% else %}
+        You're in {{ results[0].full_state_name }}'s {{ ordinal(results[0].district) }} Congressional District
+      {% end %}
+    </h3>
 
-  </br>
+    <h4>Follow and Tweet at your representatives!</h4>
+    </br>
 
     <div class="row-fluid">
       {% for rep in results %}
@@ -14,10 +21,10 @@
           <h4> Rep. {{ rep.first_name }} {{ rep.last_name }} ({{ rep.party }})</h4>
           
           {% if rep.twitter %}
-          <a href="https://twitter.com/{{ rep.twitter }}" class="twitter-follow-button" data-show-count="false" data-lang="en" data-size="large">Follow @{{ rep.twitter }} </a>
-          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+          <!--<a href="https://twitter.com/{{ rep.twitter }}" class="twitter-follow-button" data-show-count="false" data-lang="en" data-size="large">Follow @{{ rep.twitter }} </a>
+          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>-->
           {% else %}
-          <h5>No personal Twitter account!</h5>
+          <!--<h5>No personal Twitter account!</h5>-->
           {% end %}
 
           {% if rep.ftv.twitter %}
@@ -31,17 +38,9 @@
     </div> <!-- row-fluid -->
   </div> <!-- jumbotron -->
 
-  <input id = "btnSubmit" type="submit" value="Release"/>
-
 
 {% end %}
 
 {% block javascript %}
-
-$(document).ready(function() {
-    $("#btnSubmit").click(function(){
-        alert("button");
-    }); 
-});
   
 {% end %}
