@@ -67,7 +67,7 @@ class Politician(Document):
 	  	api = self.login_twitter()
 	  if api:
 	    try:
-	      #status = api.update_status(t)
+	      status = api.update_status(t)
 	      logging.info('@%s posted status:' % self.ftv.twitter)
 	      return_flag = True
 	    except:

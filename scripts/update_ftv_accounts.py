@@ -11,7 +11,7 @@ from db.politiciandb import Politician
 ''' Updates all FTV Twitter accounts name, description, image, etc. 
 	Make sure you want to update everything in this method before executing! '''
 def update_all():
-	for p in Politician.objects(twitter='RepKarenBass'):
+	for p in Politician.objects():
 		print "Updating %s..." % p.name()
 		try:
 			api = p.login_twitter()
@@ -78,7 +78,7 @@ def update_all_friends():
 	database is completely accurate '''
 def check_twitter_ftv():
 	fail_list = []
-	for p in Politician.objects(twitter="RepKarenBass"):
+	for p in Politician.objects():
 		print "Checking %s..." % p.name()
 		try:
 			api = p.login_twitter()

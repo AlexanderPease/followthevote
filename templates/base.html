@@ -15,12 +15,12 @@
 </head>
 
 <body>
-  <div class="container-narrow">
+  <div class="container">
 
-      {% block header %}
+    {% block header %}
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
-          <li class="active"><a href="#">Home</a></li>
+          <li class="active"><a href="/">Home</a></li>
           <li><a href="mailto:admin@followthevote.org">Contact</a></li>
           {% if current_user in settings.get('staff')%}
             <li><a href="/admin">Admin for @{{ current_user }}</a></li>
@@ -30,24 +30,21 @@
       </div>
 
       <hr>
-      {% end %}
+    {% end %}
 
-      {% block body %}
-
-      {% end %}
+    {% block body %}{% end %}
       
-      {% block footer %}
+    {% block footer %}
       <hr>
       <div class="footer">
+        <h5>Powered by the</h5>
         <a href="http://sunlightfoundation.com">
-          <img id="footer_logo" src="{{ static_url("img/sunlight_logo.gif") }}" alt="Powered by the Sunlight Foundation">
+          <img id="footer_logo" src="{{ static_url("img/sunlight_logo.gif") }}" alt="Sunlight Foundation">
         </a>
       </div>
-      {% end %}
+    {% end %}
 
-    </div> <!-- /container -->
-
-    {% block javascript %}{% end %}
-
-  </body>
+  </div> <!-- /container -->
+{% block javascript %}{% end %}
+</body>
 </html>
